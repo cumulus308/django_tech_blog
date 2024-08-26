@@ -1,0 +1,17 @@
+[project]
+name = "django_tech_blog"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "KyungMin.Ko", email = "rhrudals312@naver.com"},
+]
+dependencies = [
+    "django>=5.1",
+]
+requires-python = "==3.12.*"
+readme = "README.md"
+license = {text = "MIT"}
+
+
+[tool.pdm]
+distribution = false
