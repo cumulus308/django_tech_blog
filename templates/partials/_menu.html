@@ -28,6 +28,13 @@
         </li>
 
         <li>
+            <a href="{% url 'search:search_result' %}" class="{% if path_name == 'search_result' %}active{% endif %}">
+                <span class="nav-icon uil uil-credit-card-search"></span>
+                <span class="menu-text">{% translate "search-menu-title" %}</span>
+            </a>
+        </li>
+
+        <li>
             <a href="#" class="{% if path_name == 'terms' %}active{% endif %}">
                 <span class="nav-icon uil uil-question-circle"></span>
                 <span class="menu-text">{% translate "terms-menu-title" %}</span>

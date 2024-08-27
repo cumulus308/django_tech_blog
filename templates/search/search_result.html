@@ -1,0 +1,116 @@
+{% extends 'layout/app.html' %}
+
+{% block title %} Search Result {% endblock %}
+
+{% load i18n %}
+
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="breadcrumb-main">
+                <h4 class="text-capitalize breadcrumb-title">{% translate "search-menu-title" %}</h4>
+                <div class="breadcrumb-action justify-content-center flex-wrap">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#"><i class="las la-home"></i>Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{% translate "search-menu-title" %}</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="search-result global-shadow rounded-pill bg-white">
+                <form action="{% url "search:search_result" %}" class="d-flex align-items-center justify-content-between" method="get">
+                    <div class="border-right d-flex align-items-center w-100  ps-25 pe-sm-25 pe-0 py-1">
+                        <img src="{% static 'img/svg/search.svg' %}" alt="search" class="svg">
+                        <input class="form-control border-0 box-shadow-none" type="search" placeholder="Type and search" aria-label="Search" name="q">
+                    </div>
+                    <button type="button" class="border-0 bg-transparent px-25">search</button>
+                </form>
+            </div>
+        </div>
+        <div class="col-sm-12">
+            <div class="search-keyword mt-20 mb-30">
+
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="tab-content" id="pills-tabContent">
+                <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                    <div class="search-content bg-white radius-xl d-flex mb-50">
+                        <div class="card  border-0 px-sm-30 px-20">
+                            <div class="card-header flex-1 d-flex align-items-center flex-wrap justify-content-between border-bottom-0 px-0">
+                                {% comment %} <p class="keyword-searching text-dark py-10">207 <span class="color-light fw-400">results found
+                                        for</span> “Keyword”</p>
+                                <p class="mb-0 fs-14 color-light fw-400 ">Showing 1-10 of 76 results</p> {% endcomment %}
+                            </div>
+                            <div class="card-body border-bottom border-top px-0 pb-0 pt-25">
+                                <div class="search-content__keyResult">
+                                    {% for item in highlighted_posts %}
+                                    <div class="mb-30">
+                                        <a href="#">
+                                            <h6 class="fw-500">
+                                                {% if item.highlighted_title %}
+                                                    {{ item.highlighted_title.start|striptags }}<span class="color-primary">{{ item.highlighted_title.match|striptags }}</span>{{ item.highlighted_title.end|striptags }}
+                                                {% else %}
+                                                    {{ item.post.title|striptags }}
+                                                {% endif %}
+                                            </h6>
+                                        </a>
+                                        <p class="mb-0">
+                                            {% if item.highlighted_content %}
+                                                {{ item.highlighted_content.start|striptags }}<span class="color-primary">{{ item.highlighted_content.match|striptags }}</span>{{ item.highlighted_content.end|striptags }}
+                                            {% else %}
+                                                {{ item.post.content|striptags }}
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    {% empty %}
+                                        <p> 해당하는 게시물이 없습니다. </p><br>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="card-footer border-0 pt-30 pb-40 px-0 bg-transparent">
+                                <nav class="dm-page ">
+                                    <ul class="dm-pagination d-flex">
+                                        <li class="dm-pagination__item">
+                                            <a href="#" class="dm-pagination__link pagination-control"><span class="la la-angle-left"></span></a>
+                                            <a href="#" class="dm-pagination__link"><span class="page-number">1</span></a>
+                                            <a href="#" class="dm-pagination__link active"><span class="page-number">2</span></a>
+                                            <a href="#" class="dm-pagination__link"><span class="page-number">3</span></a>
+                                            <a href="#" class="dm-pagination__link pagination-control"><span class="page-number">...</span></a>
+                                            <a href="#" class="dm-pagination__link"><span class="page-number">12</span></a>
+                                            <a href="#" class="dm-pagination__link pagination-control"><span class="la la-angle-right"></span></a>
+                                            <a href="#" class="dm-pagination__option">
+                                            </a>
+                                        </li>
+                                        <li class="dm-pagination__item">
+                                            <div class="paging-option">
+                                                <select name="page-number" class="page-selection">
+                                                    <option value="20">20/page</option>
+                                                    <option value="40">40/page</option>
+                                                    <option value="60">60/page</option>
+                                                </select>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="tab-pane fade" id="pills-presentation" role="tabpanel" aria-labelledby="pills-presentation-tab">
+                </div>
+                <div class="tab-pane fade" id="pills-web" role="tabpanel" aria-labelledby="pills-web-tab">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
