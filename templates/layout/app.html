@@ -19,6 +19,30 @@
 
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'img/favicon.png' %}">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v3.0.0/css/line.css">
+    <style>
+        /* 스크롤바 전체 */
+        textarea::-webkit-scrollbar {
+            width: 8px;
+            background-color: #f1f1f1; /* 스크롤바 배경색 */
+        }
+
+        /* 스크롤바의 움직이는 부분 */
+        textarea::-webkit-scrollbar-thumb {
+            background-color: #8231d3; /* 버튼 색상에 맞춰 스크롤바 색상 설정 */
+            border-radius: 10px;
+        }
+
+        /* 스크롤바를 클릭했을 때 */
+        textarea::-webkit-scrollbar-thumb:hover {
+            background-color: #0056b3; /* 약간 어두운 색상으로 변경 */
+        }
+
+        /* 스크롤바의 트랙 */
+        textarea::-webkit-scrollbar-track {
+            background-color: #e9ecef; /* 스크롤바 트랙 색상 설정 */
+        }
+        </style>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body class="layout-light side-menu">
     <div class="mobile-search">
@@ -61,5 +85,6 @@
     <script src="{% static 'js/env.js' %}"></script>
 
     {% include 'partials/_scripts.html' %}
+    {% block extra_js %}{% endblock  %}
 </body>
 </html>
