@@ -1,19 +1,21 @@
+from django.contrib import messages
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from .models import Post
 from django.db.models import Q
 from .forms import PostForm
 from django.views import View
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 
+
 # Create your views here.
 class PostListView(ListView):
     model = Post
-    template_name = 'blogs/post_list.html'
+    template_name = "blogs/post_list.html"
     context_object_name = "posts"
-    
+
     def get_queryset(self):
         queryset = super().get_queryset()
         q = self.request.GET.get("q", "")
@@ -22,8 +24,9 @@ class PostListView(ListView):
                 Q(title__icontains=q) | Q(content__icontains=q)
             ).distinct()
 
+        queryset = queryset.order_by("-created_at")
         return queryset
-    
+
 
 class PostDetailView(View):
     def get(self, request, pk):
@@ -35,15 +38,15 @@ class PostDetailView(View):
                 "post": post,
             },
         )
-    
+
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
     template_name = "blogs/post_form.html"
-    login_url = 'accounts:login'
-    redirect_field_name = 'next'
-    
+    login_url = "accounts:login"
+    redirect_field_name = "next"
+
     def form_valid(self, form):
         form.instance.writer = self.request.user
         return super().form_valid(form)
@@ -52,14 +55,43 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         return reverse_lazy("blogs:post_detail", kwargs={"pk": self.object.pk})
 
 
-class PostUpdateView(UpdateView):
+class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = "blogs/post_form.html"
 
+    def test_func(self):
+        post = self.get_object()
+        return self.request.user == post.writer
+
+    def handle_no_permission(self):
+        return HttpResponseForbidden("You do not have permission to edit this post.")
+
     def get_success_url(self):
         return reverse_lazy("blogs:post_detail", kwargs={"pk": self.object.pk})
-    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["post"] = self.get_object()  # 명시적으로 post 객체를 컨텍스트에 추가
+        return context
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset=queryset)
+        if obj:
+            messages.info(self.request, "You are now editing your post.")
+        return obj
+
+    def form_valid(self, form):
+        messages.success(self.request, "Your post has been updated successfully.")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(
+            self.request,
+            "There was an error updating your post. Please check the form.",
+        )
+        return super().form_invalid(form)
+
 
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
@@ -67,7 +99,7 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         post = self.get_object()
-        return self.request.user == post.author
+        return self.request.user == post.writer
 
     def handle_no_permission(self):
         return HttpResponseForbidden("You do not have permission to delete this post.")

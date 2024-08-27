@@ -1,0 +1,65 @@
+<!doctype html>
+{% load static %}
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>HexaDash - Register</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/plugin.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'img/favicon.png' %}">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v3.0.0/css/line.css">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="breadcrumb-main">
+                <h4 class="text-capitalize breadcrumb-title"></h4>
+                <div class="breadcrumb-action justify-content-center flex-wrap">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#"><i class="las la-home"></i></a></li>
+                            <li class="breadcrumb-item active" aria-current="page"></li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card card-horizontal card-default card-md mb-4">
+                <div class="card-header">
+                    <h6>Welcome to Modu's blog</h6>
+                </div>
+                <div class="card-body py-md-30">
+                    <div class="horizontal-form">
+                        <div class="container">
+                            <div class="row">
+                                <!-- 첫 번째 줄: 하나로 묶인 컬럼 -->
+                                <div class="col-12 d-flex justify-content-center align-items-center">
+                                    <a href="{% url 'blogs:post_list' %}" class="btn btn-secondary btn-default btn-squared">Main Page</a>
+                                </div>
+                            </div>
+                            <div class="row mt-10">
+                                <!-- 두 번째 줄: 두 개의 컬럼 -->
+                                <div class="col-6 d-flex justify-content-center align-items-center">
+                                    <a href="{% url 'accounts:login' %}" class="btn btn-secondary btn-default btn-squared">Login</a>
+                                </div>
+                                <div class="col-6 d-flex justify-content-center align-items-center">
+                                    <a href="{% url 'accounts:signup' %}" class="btn btn-secondary btn-default btn-squared">Signup</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'partials/_scripts.html' %}
+</body>
+</html>

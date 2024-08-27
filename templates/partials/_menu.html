@@ -1,0 +1,67 @@
+{% load i18n %}
+{% load static %}
+{% with request.resolver_match.url_name as path_name %}
+<div class="sidebar__menu-group">
+    <ul class="sidebar_nav">
+
+
+        <li class="has-child {% if '/pages/blog/' in request.path %}open{% endif %}">
+            <a href="#" class="{% if '/pages/blog/' in request.path %}active{% endif %}">
+                <span class="nav-icon uil uil-images"></span>
+                <span class="menu-text">{% translate "blog-menu-title" %}</span>
+                <span class="toggle-icon"></span>
+            </a>
+            <ul>
+                <li>
+                    <a href="#" class="{% if path_name == 'blog_one' %}active{% endif %}">{% translate "blog-style-one" %}</a>
+                </li>
+                <li>
+                    <a href="#" class="{% if path_name == 'blog_two' %}active{% endif %}">{% translate "blog-style-two" %}</a>
+                </li>
+                <li>
+                    <a href="#" class="{% if path_name == 'blog_three' %}active{% endif %}">{% translate "blog-style-three" %}</a>
+                </li>
+                <li>
+                    <a href="#" class="{% if path_name == 'blog_details' %}active{% endif %}">{% translate "blog-detail" %}</a>
+                </li>
+            </ul>
+        </li>
+
+        <li>
+            <a href="#" class="{% if path_name == 'terms' %}active{% endif %}">
+                <span class="nav-icon uil uil-question-circle"></span>
+                <span class="menu-text">{% translate "terms-menu-title" %}</span>
+            </a>
+        </li>
+        <li>
+            <a href="#" class="{% if path_name == 'maintenance' %}active{% endif %}">
+                <span class="nav-icon uil uil-airplay"></span>
+                <span class="menu-text">{% translate "maintenance-menu-title" %}</span>
+            </a>
+        </li>
+        <li>
+            <a href="#" class="{% if path_name == 'not_found' %}active{% endif %}">
+                <span class="nav-icon uil uil-exclamation-triangle"></span>
+                <span class="menu-text">{% translate "not-found-menu-title" %}</span>
+            </a>
+        </li>
+        <li>
+            <a href="#" class="{% if path_name == 'coming_soon' %}active{% endif %}">
+                <span class="nav-icon uil uil-sync"></span>
+                <span class="menu-text">{% translate "coming-soon-menu-title" %}</span>
+            </a>
+        </li>
+        {% if path_name == 'demo_five' %}
+            <div class="card sidebar__feature shadow-none bg-transparent border-0 py-sm-50 px-sm-35 text-center">
+                <div class="px-15 mb-sm-35 mb-20">
+                    <img src="{% static 'img/sidebar-feature.png' %}" alt="book">
+                </div>
+                <h3>Get More Feature by Upgrading</h3>
+                <button type="button" class="btn btn-primary inline-flex mt-sm-35 mt-20">
+                    Go Premium
+                </button>
+            </div>
+        {% endif %}
+    </ul>
+</div>
+{% endwith %}

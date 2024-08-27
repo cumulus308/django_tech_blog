@@ -1,0 +1,129 @@
+{% extends 'layout/app.html' %}
+
+{% block title %} Blog Details {% endblock %}
+
+{% load i18n %}
+
+{% load static %}
+
+{% load safe_content %}
+
+
+{% block content %}
+<div class="blog-page2">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb-main">
+                    <h4 class="text-capitalize breadcrumb-title">{% translate "blog-detail" %}</h4>
+                    <div class="breadcrumb-action justify-content-center flex-wrap">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                {% if user.is_authenticated and user == post.writer %}
+                                    <li class="breadcrumb-item">
+                                        <a href="{% url 'blogs:post_update' post.pk %}">{% translate "Edit" %}</a>
+                                    </li>
+                                    <li class="breadcrumb-item">
+                                        <form action="{% url 'blogs:post_delete' post.pk %}" method="post" style="display: inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-link p-0" onclick="return confirm('Are you sure you want to delete this post?');">
+                                                {% translate "Delete" %}
+                                            </button>
+                                        </form>
+                                    </li>
+                                {% endif %}
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-12">
+                <div class="blog-details-thumbnail">
+                    <img src="{% static 'img/blog-details.png' %}">
+                </div>
+                <article class="blog-details">
+                    <div class="blog-details-content">
+                        <h1 class="main-title mb-30"> {{ post.title }} </h1>
+                        <ul class="blog-details-meta">
+                            <li class="blog-author">
+                                <a href="#">
+                                    <img src="{% static 'img/author-nav1.jpg' %}">
+                                </a>
+                                <a href="#">
+                                    <span> {{ post.writer }} </span>
+                                </a>
+                            </li>
+                            <li class="author-name">
+                                <a href="#" rel="bookmark">
+                                    <time class="entry-date published updated" > {{post.created_at }} </time>
+                                </a>
+                            </li>
+                            {% comment %} <li class="blog-category">
+                                <a href="#" rel="category tag">Development</a>
+                            </li> {% endcomment %}
+                            <li class="blog-read-time">8 mins read</li>
+                        </ul>
+                        <div class="blog-body">
+                            {{ post.content | safe_content }}
+                        </div>
+                        {% comment %} <div class="blog-tags">
+                            <ul>
+                                <li><a href="#">Design Process</a></li>
+                                <li><a href="#">Prototype</a></li>
+                                <li><a href="#">Design Process</a></li>
+                                <li><a href="#">Prototype</a></li>
+                            </ul>
+                        </div> {% endcomment %}
+
+                        <div class="blog-author-box media">
+                            <div class="auth-img">
+                                <img class="w-70" src="{% static 'img/author-nav.jpg' %}" alt="author-nav">
+                            </div>
+                            <div class="auth-details media-body">
+                                <span>Written by</span>
+                                <h2>{{post.writer}}</h2>
+                                {% comment %} <p>Charli Day is a British writer and social media manager specializing in dynamic
+                                    branding, campaign strategy and content engagement. </p> {% endcomment %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="blog-share-top">
+                        {% comment %} <div class="blog-share-fixed">
+                            <span>share</span>
+                            <ul>
+                                <li>
+                                    <a href="#" class="facebook">
+                                        <i class="uil uil-facebook-f"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="twitter">
+                                        <i class="uil uil-twitter"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="pinterest">
+                                        <i class="lab la-pinterest"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="linkedin">
+                                        <i class="uil uil-linkedin"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="link copy-to-clickboard">
+                                        <i class="uil uil-copy"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div> {% endcomment %}
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
