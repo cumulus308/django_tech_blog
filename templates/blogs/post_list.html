@@ -37,9 +37,7 @@
                                         <div class="date">{{ post.created_at | date:"y/m/d" }}</div>
                                     </li>
                                     <li>
-                                        <div class="read">
-                                            6 mins read
-                                        </div>
+                                        <div class="category">{{ post.category }}</div>
                                     </li>
                                 </ul>
                             </div>
@@ -65,7 +63,7 @@
                                     <li>
                                         <div class="blog-card__meta-doc-wrapper">
                                             <img src="{% static 'img/svg/file-text.svg' %}" alt="file-text" class="svg">
-                                            <span class="blog-card__meta-doc">75</span>
+                                            <span class="blog-card__meta-doc"> {{ post.hit }} </span>
                                         </div>
                                     </li>
                                 </ul>

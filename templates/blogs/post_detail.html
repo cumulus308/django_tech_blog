@@ -60,9 +60,9 @@
                                     <time class="entry-date published updated" > {{post.created_at }} </time>
                                 </a>
                             </li>
-                            {% comment %} <li class="blog-category">
-                                <a href="#" rel="category tag">Development</a>
-                            </li> {% endcomment %}
+                            <li class="blog-category">
+                                <a href="#" rel="category tag">{{ post.category }}</a>
+                            </li>
                             <li class="blog-read-time">8 mins read</li>
                         </ul>
                         <div class="blog-body">

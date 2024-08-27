@@ -42,6 +42,8 @@ class PostDetailView(View):
 
     def get(self, request, pk):
         post = self.get_object()
+        post.hit += 1
+        post.save()
         return render(
             request,
             "blogs/post_detail.html",
