@@ -29,10 +29,25 @@
                         <div class="reply-form pt-0">
                             <form method="post" enctype="multipart/form-data">
                                 {% csrf_token %}
+
                                 <div>
                                     <div class="form-group">
                                         <label for="mail-subject" class="il-gray fs-14 fw-500 align-center mb-10"></label>
                                         <input type="text" name="title" class="form-control form-control-lg" id="mail-subject" placeholder="제목을 입력하세요" value="{{ post.title }}">
+                                    </div>
+                                </div>
+
+                                <div class="card-body">
+                                    <div class="dropdown dropdown-click float-end" style="margin-top: -10px;">
+                                        <a class="btn-link" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Category
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg replaced-svg"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                        </a>
+                                        <div class="dropdown-default dropdown-menu">
+                                            {% for category in categories %}
+                                                <a class="dropdown-item" href="#" data-category-id="{{ category.id }}" onclick="selectCategory(event, '{{ category.name }}', {{ category.id }})">{{ category.name }}</a>
+                                            {% endfor %}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -41,6 +56,7 @@
                                         <textarea name="content" id="mail-reply-message2" class="form-control-lg" placeholder="Type your message...">{{ post.content }}</textarea>
                                     </div>
                                 </div>
+                                <input type="hidden" name="category" id="selectedCategory">
                                 <button type="submit" class="btn btn-primary btn-default btn-squared btn-shadow-primary ">제출
                                 </button>
                             </form>
@@ -53,4 +69,13 @@
         </div>
     </div>
 </div>
+{% block extra_js %}
+<script>
+    function selectCategory(event, categoryName, categoryId) {
+        event.preventDefault();
+        document.getElementById('selectedCategory').value = categoryId;
+        document.querySelector('.btn-link').innerHTML = categoryName + ' <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg replaced-svg"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+    }
+    </script>
+{% endblock  %}
 {% endblock %}

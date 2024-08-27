@@ -3,7 +3,7 @@ from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from .models import Post, Comment
+from .models import Category, Post, Comment
 from django.db.models import Q
 from .forms import CommentForm, PostForm
 from django.views import View
@@ -37,6 +37,7 @@ class PostDetailView(View):
         context = super().get_context_data(**kwargs)
         context["comments"] = self.get_object().comments.all().order_by("created_at")
         context["comment_form"] = CommentForm()
+        context["categories"] = Category.objects.all()
         return context
 
     def get(self, request, pk):
@@ -46,6 +47,7 @@ class PostDetailView(View):
             "blogs/post_detail.html",
             {
                 "post": post,
+                "categories": Category.objects.all(),
             },
         )
 
@@ -84,6 +86,11 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         return reverse_lazy("blogs:post_detail", kwargs={"pk": self.object.pk})
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["categories"] = Category.objects.all()
+        return context
+
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
@@ -102,7 +109,8 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["post"] = self.get_object()  # 명시적으로 post 객체를 컨텍스트에 추가
+        context["post"] = self.get_object()
+        context["categories"] = Category.objects.all()
         return context
 
     def get_object(self, queryset=None):
