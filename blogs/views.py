@@ -3,6 +3,8 @@ from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+
+from accounts.models import CustomUser, Follow
 from .models import Bookmark, Category, Post, Comment
 from django.db.models import Q
 from .forms import CommentForm, PostForm
@@ -45,12 +47,20 @@ class PostDetailView(View):
                 user=request.user, post=post
             ).exists()
 
+        user_to_follow = post.writer
+        is_following = False
+        if request.user.is_authenticated:
+            is_following = Follow.objects.filter(
+                follower=request.user, following=user_to_follow
+            ).exists()
+
         context = {
             "post": post,
             "categories": Category.objects.all(),
             "comments": post.comments.all().order_by("created_at"),
             "comment_form": CommentForm(),
-            "is_bookmarked": is_bookmarked,  # 북마크 상태를 컨텍스트에 추가
+            "is_bookmarked": is_bookmarked,
+            "is_following": is_following,
         }
         return render(request, "blogs/post_detail.html", context)
 
@@ -211,5 +221,33 @@ class ToggleBookmarkView(View):
 
         if not created:
             bookmark.delete()
+
+        return redirect(request.META.get("HTTP_REFERER", "/"))
+
+
+class ToggleFollowView(View):
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        if not user.is_authenticated:
+            messages.error(request, "로그인하지 않았습니다.")
+            return redirect(request.META.get("HTTP_REFERER", "/"))
+
+        # 팔로우할 대상 사용자의 ID를 URL에서 가져옵니다.
+        follow_user_id = kwargs.get("user_id")
+        follow_user = get_object_or_404(CustomUser, id=follow_user_id)
+
+        # 자신을 팔로우하려고 하면 에러를 반환할 수 있습니다.
+        if user == follow_user:
+            messages.error(request, "자기 자신을 팔로우할 수 없습니다.")
+            return redirect(request.META.get("HTTP_REFERER", "/"))
+
+        # 팔로우 상태를 토글합니다.
+        follow, created = Follow.objects.get_or_create(
+            follower=user, following=follow_user
+        )
+
+        if not created:
+            # 이미 팔로우한 상태라면 언팔로우
+            follow.delete()
 
         return redirect(request.META.get("HTTP_REFERER", "/"))

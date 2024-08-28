@@ -8,6 +8,7 @@ from .views import (
     CommentUpdateView,
     CommentDeleteView,
     ToggleBookmarkView,
+    ToggleFollowView,
 )
 
 app_name = "blogs"
@@ -28,5 +29,10 @@ urlpatterns = [
         "post/<int:post_id>/toggle-bookmark/",
         ToggleBookmarkView.as_view(),
         name="toggle_bookmark",
+    ),
+    path(
+        "user/<int:user_id>/toggle-follow/",
+        ToggleFollowView.as_view(),
+        name="toggle_follow",
     ),
 ]

@@ -96,43 +96,21 @@
                             <div class="auth-details media-body">
                                 <span>Written by</span>
                                 <h2>{{post.writer}}</h2>
-                                {% comment %} <p>Charli Day is a British writer and social media manager specializing in dynamic
-                                    branding, campaign strategy and content engagement. </p> {% endcomment %}
+
+                                <form method="post" action="{% url 'blogs:toggle_follow' post.writer.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-primary btn-default btn-squared ">
+                                        {% if is_following %}
+                                            Unfollow
+                                        {% else %}
+                                            Follow
+                                        {% endif %}
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
-                    <div class="blog-share-top">
-                        {% comment %} <div class="blog-share-fixed">
-                            <span>share</span>
-                            <ul>
-                                <li>
-                                    <a href="#" class="facebook">
-                                        <i class="uil uil-facebook-f"></i>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="twitter">
-                                        <i class="uil uil-twitter"></i>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="pinterest">
-                                        <i class="lab la-pinterest"></i>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="linkedin">
-                                        <i class="uil uil-linkedin"></i>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="link copy-to-clickboard">
-                                        <i class="uil uil-copy"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div> {% endcomment %}
-                    </div>
+
                 </article>
                 <div class="card card-default card-md mb-4">
                     <div class="card-header py-20">
@@ -189,37 +167,6 @@
                                 {% empty %}
                                     <p> No posts yet! </p><br>
                                 {% endfor %}
-
-                                {% comment %} <li>
-                                    <div class="dm-comment-box media">
-                                        <div class="dm-comment-box__author">
-                                            <figure>
-                                                <img src="{% static 'img/author/1.jpg' %}" class="bg-opacity-primary d-flex" alt="Admin Autor">
-                                            </figure>
-                                        </div>
-                                        <div class="dm-comment-box__content media-body">
-                                            <div class="comment-content-inner cci">
-                                                <span class="cci__author-info">David</span>
-                                                <p class="cci__comment-text">We supply a series of design principles, practical patterns and high quality
-                                                    design resources (Sketch and Axure), to help people create their product prototypes beautifully and
-                                                    efficiently.</p>
-                                                <div class="cci__comment-actions">
-                                                    <a href="#" class="btn-like">
-                                                        <img class="svg" src="{% static 'img/svg/thumbs-up.svg' %}" alt="thumbs-up">
-                                                        <span class="line-count">0</span>
-                                                    </a>
-                                                    <a href="#" class="btn-dislike">
-                                                        <img src="{% static 'img/svg/thumbs-down.svg' %}" alt="thumbs-down" class="svg">
-                                                        <span class="line-count">0</span>
-                                                    </a>
-                                                    <a href="#" class="btn-reply">
-                                                        <span>Reply</span>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li> {% endcomment %}
                             </ul>
                         </div>
                     </div>
