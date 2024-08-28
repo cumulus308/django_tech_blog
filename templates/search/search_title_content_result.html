@@ -24,7 +24,7 @@
         </div>
         <div class="col-md-6">
             <div class="search-result global-shadow rounded-pill bg-white">
-                <form action="{% url "search:search_result" %}" class="d-flex align-items-center justify-content-between" method="get">
+                <form action="{% url "search:title_content_result" %}" class="d-flex align-items-center justify-content-between" method="get">
                     <div class="border-right d-flex align-items-center w-100  ps-25 pe-sm-25 pe-0 py-1">
                         <img src="{% static 'img/svg/search.svg' %}" alt="search" class="svg">
                         <input class="form-control border-0 box-shadow-none" type="search" placeholder="Type and search" aria-label="Search" name="q"  value="{{ q }}">
@@ -47,7 +47,7 @@
                             <div class="card-header flex-1 d-flex align-items-center flex-wrap justify-content-between border-bottom-0 px-0">
                                 <p class="keyword-searching text-dark py-10">제목 & 내용 ( {{ post_count }} <span class="color-light fw-400">results found
                                         for</span> “{{ q }}” )</p>
-                                <p class="mb-0 fs-14 color-light fw-400"><a href="{% url 'search:title_content_result' %}?q={{ q }}"> 모두 보기 </a></p>
+
                             </div>
                             {% comment %} 게시물 {% endcomment %}
                             <div class="card-body border-bottom border-top px-0 pb-0 pt-25">
@@ -79,64 +79,6 @@
                         </div>
                     </div>
 
-                    {% comment %} 작성자가 쓴 글 검색 헤드 {% endcomment %}
-
-                    <div class="search-content bg-white radius-xl d-flex mb-50">
-                        <div class="card  border-0 px-sm-30 px-20 w-100">
-                            <div class="card-header flex-1 d-flex align-items-center flex-wrap justify-content-between border-bottom-0 px-0">
-                                <p class="keyword-searching text-dark py-10"> 글쓴이 ( {{ writer_count }} <span class="color-light fw-400">results found
-                                        for</span> “{{ q }}” )</p>
-                                <p class="mb-0 fs-14 color-light fw-400"><a href="{% url 'search:writer_result' %}?q={{ q }}"> 모두 보기 </a></p>
-                            </div>
-                            {% comment %} 게시물 {% endcomment %}
-                            <div class="card-body border-bottom border-top px-0 pb-0 pt-25">
-                                <div class="search-content__keyResult">
-                                    {% for item in writer_posts %}
-                                    <div class="mb-30">
-                                        <a href={% url 'blogs:post_detail' item.post.pk %}>
-                                            <h6 class="fw-500">
-                                                {{ item.post.title|striptags }}<span class="color-light fw-400"> - (by. {{ item.highlighted_writer.start|striptags }}<span class="color-primary">{{ item.highlighted_writer.match|striptags }}</span>{{ item.highlighted_writer.end|striptags }}) </span>
-                                            </h6>
-                                        </a>
-                                        <p class="mb-0">
-                                            {{ item.post.content|striptags }}
-                                        </p>
-                                    </div>
-                                    {% empty %}
-                                        <p> 해당하는 게시물이 없습니다. </p><br>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {% comment %} 카테고리 검색 검색 헤드 {% endcomment %}
-
-                    <div class="search-content bg-white radius-xl d-flex mb-50">
-                        <div class="card  border-0 px-sm-30 px-20 w-100">
-                            <div class="card-header flex-1 d-flex align-items-center flex-wrap justify-content-between border-bottom-0 px-0">
-                                <p class="keyword-searching text-dark py-10"> 카테고리 ( {{ category_count }} <span class="color-light fw-400">results found
-                                        for</span> “{{ q }}” )</p>
-                                <p class="mb-0 fs-14 color-light fw-400"><a href="{% url 'search:category_result' %}?q={{ q }}"> 모두 보기 </a></p>
-                            </div>
-                            {% comment %} 게시물 {% endcomment %}
-                            <div class="card-body border-bottom border-top px-0 pb-0 pt-25">
-                                <div class="search-content__keyResult">
-                                    {% for item in highlighted_categories %}
-                                    <div class="mb-30">
-                                        <a href="{% url 'search:category_detail_result' item.category_pk%}">
-                                            <h6 class="fw-500">
-                                                {{ item.highlighted_category.start }}<span class="color-primary">{{ item.highlighted_category.match }}</span>{{ item.highlighted_category.end }}
-                                            </h6>
-                                        </a>
-                                    </div>
-                                    {% empty %}
-                                        <p> 해당하는 게시물이 없습니다. </p><br>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
 

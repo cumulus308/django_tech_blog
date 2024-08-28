@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.db.models import Q
-from blogs.models import Post
+from blogs.models import Category, Post
 from django.views.generic import ListView
 
 
@@ -92,7 +92,7 @@ def combined_view(request):
 
     for post in category_posts:
         category = post.category.name
-
+        category_pk = post.category.pk
         q_category_position = category.find(q)
         if q_category_position != -1:
             highlighted_category = {
@@ -107,6 +107,7 @@ def combined_view(request):
             {
                 "post": post,
                 "highlighted_category": highlighted_category,
+                "category_pk": category_pk,
             }
         )
 
@@ -131,7 +132,7 @@ class TitleContentSearchListView(ListView):
     """
 
     model = Post
-    template_name = "blogs/search_title_content_result.html"
+    template_name = "search/search_title_content_result.html"
     context_object_name = "posts"
 
     def get_queryset(self):
@@ -195,12 +196,14 @@ class WriterPostSearchListView(ListView):
     """
 
     model = Post
-    template_name = "blogs/search_writer_result.html"
+    template_name = "search/search_writer_result.html"
     context_object_name = "posts"
 
     def get_queryset(self):
         q = self.request.GET.get("q", "")
-        queryset = super().get_queryset().order_by("-created_at")
+        queryset = (
+            super().get_queryset().select_related("writer").order_by("-created_at")
+        )
 
         if q:
             queryset = queryset.filter(writer__username__icontains=q).distinct()
@@ -238,3 +241,67 @@ class WriterPostSearchListView(ListView):
         context["post_count"] = post_count
 
         return context
+
+
+class CategorySearchListView(ListView):
+    model = Category
+    template_name = "search/search_category_result.html"
+    context_object_name = "categories"
+
+    def get_queryset(self):
+        q = self.request.GET.get("q", "")
+        queryset = super().get_queryset().all().order_by("-created_at")
+
+        if q:
+            queryset = queryset.filter(name__icontains=q).distinct()
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        q = self.request.GET.get("q", "")
+        categories = context["categories"]
+        category_count = categories.count()
+        highlighted_categories = []
+
+        for category in categories:
+            category_name = category.name  # 카테고리 이름을 별도의 변수로 처리
+            category_pk = category.pk  # 카테고리 객체의 pk를 가져옴
+
+            q_category_position = category_name.find(q)
+            if q_category_position != -1:
+                highlighted_category = {
+                    "start": category_name[:q_category_position],
+                    "match": category_name[
+                        q_category_position : q_category_position + len(q)
+                    ],
+                    "end": category_name[q_category_position + len(q) :],
+                }
+            else:
+                highlighted_category = None
+
+            highlighted_categories.append(
+                {
+                    "category": category,  # 실제 카테고리 객체를 그대로 유지
+                    "highlighted_category": highlighted_category,
+                    "category_pk": category_pk,  # 실제 pk 값을 추가
+                }
+            )
+
+        context["highlighted_categories"] = highlighted_categories
+        context["q"] = q
+        context["category_count"] = category_count
+        return context
+
+
+class CategorySearchDetailListView(ListView):
+    model = Post
+    template_name = "search/search_category_detail_result.html"
+    context_object_name = "posts"
+
+    def get_queryset(self):
+        category_pk = self.kwargs.get("category_pk")
+        queryset = super().get_queryset().filter(category_id=category_pk)
+
+        print(queryset)
+        return queryset

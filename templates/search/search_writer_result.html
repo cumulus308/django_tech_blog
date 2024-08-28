@@ -1,0 +1,85 @@
+{% extends 'layout/app.html' %}
+
+{% block title %} Search Result {% endblock %}
+
+{% load i18n %}
+
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="breadcrumb-main">
+                <h4 class="text-capitalize breadcrumb-title">{% translate "search-menu-title" %}</h4>
+                <div class="breadcrumb-action justify-content-center flex-wrap">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            {% comment %} <li class="breadcrumb-item"><a href="#"><i class="las la-home"></i>Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{% translate "search-menu-title" %}</li> {% endcomment %}
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="search-result global-shadow rounded-pill bg-white">
+                <form action="{% url "search:writer_result" %}" class="d-flex align-items-center justify-content-between" method="get">
+                    <div class="border-right d-flex align-items-center w-100  ps-25 pe-sm-25 pe-0 py-1">
+                        <img src="{% static 'img/svg/search.svg' %}" alt="search" class="svg">
+                        <input class="form-control border-0 box-shadow-none" type="search" placeholder="Type and search" aria-label="Search" name="q" value="{{ q }}">
+                    </div>
+                    <button type="submit" class="border-0 bg-transparent px-25">search</button>
+                </form>
+            </div>
+        </div>
+        <div class="col-sm-12">
+            <div class="search-keyword mt-20 mb-30">
+
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="tab-content" id="pills-tabContent">
+                <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+
+                    {% comment %} 작성자가 쓴 글 검색 헤드 {% endcomment %}
+
+                    <div class="search-content bg-white radius-xl d-flex mb-50">
+                        <div class="card  border-0 px-sm-30 px-20 w-100">
+                            <div class="card-header flex-1 d-flex align-items-center flex-wrap justify-content-between border-bottom-0 px-0">
+                                <p class="keyword-searching text-dark py-10"> 글쓴이 ( {{ post_count }} <span class="color-light fw-400">results found
+                                        for</span> “{{ q }}” )</p>
+                            </div>
+                            {% comment %} 게시물 {% endcomment %}
+                            <div class="card-body border-bottom border-top px-0 pb-0 pt-25">
+                                <div class="search-content__keyResult">
+                                    {% for item in highlighted_posts %}
+                                    <div class="mb-30">
+                                        <a href={% url 'blogs:post_detail' item.post.pk %}>
+                                            <h6 class="fw-500">
+                                                {{ item.post.title|striptags }}<span class="color-light fw-400"> - (by. {{ item.highlighted_writer.start|striptags }}<span class="color-primary">{{ item.highlighted_writer.match|striptags }}</span>{{ item.highlighted_writer.end|striptags }}) </span>
+                                            </h6>
+                                        </a>
+                                        <p class="mb-0">
+                                            {{ item.post.content|striptags }}
+                                        </p>
+                                    </div>
+                                    {% empty %}
+                                        <p> 해당하는 게시물이 없습니다. </p><br>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="tab-pane fade" id="pills-presentation" role="tabpanel" aria-labelledby="pills-presentation-tab">
+                </div>
+                <div class="tab-pane fade" id="pills-web" role="tabpanel" aria-labelledby="pills-web-tab">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
