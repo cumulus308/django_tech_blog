@@ -20,12 +20,22 @@ from django.contrib import admin
 from django.urls import path, include
 from accounts.views import index
 
+
+from django.http import HttpResponseNotFound
+from django.shortcuts import render
+
+
+def test_404_viw(request):
+    return HttpResponseNotFound(render(request, "404.html"))
+
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("accounts.urls")),
     path("blogs/", include("blogs.urls")),
     path("search/", include("search.urls")),
     path("", index, name="index"),
+    path("test-404/", test_404_viw, name="index"),
 ]
 
 if settings.DEBUG:
