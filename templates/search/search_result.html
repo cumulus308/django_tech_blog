@@ -41,12 +41,13 @@
         <div class="col-12">
             <div class="tab-content" id="pills-tabContent">
                 <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                    {% comment %} 제목 & 내용 검색 {% endcomment %}
                     <div class="search-content bg-white radius-xl d-flex mb-50">
-                        <div class="card  border-0 px-sm-30 px-20">
+                        <div class="card  border-0 px-sm-30 px-20 w-100">
                             <div class="card-header flex-1 d-flex align-items-center flex-wrap justify-content-between border-bottom-0 px-0">
-                                <p class="keyword-searching text-dark py-10">{{ post_count }} <span class="color-light fw-400">results found
-                                        for</span> “{{ q }}”</p>
-                                <p class="mb-0 fs-14 color-light fw-400 ms-30">Showing 1-10 of 76 results</p>
+                                <p class="keyword-searching text-dark py-10">제목 & 내용 ( {{ post_count }} <span class="color-light fw-400">results found
+                                        for</span> “{{ q }}” )</p>
+                                <p class="mb-0 fs-14 color-light fw-400"><a href="{% url "search:title_content_result" %}"> 모두 보기 </a></p>
                             </div>
 
                             <div class="card-body border-bottom border-top px-0 pb-0 pt-25">
@@ -56,7 +57,7 @@
                                         <a href="#">
                                             <h6 class="fw-500">
                                                 {% if item.highlighted_title %}
-                                                    {{ item.highlighted_title.start|striptags }}<span class="color-primary">{{ item.highlighted_title.match|striptags }}</span>{{ item.highlighted_title.end|striptags }}
+                                                    {{ item.highlighted_title.start|striptags }}<span class="color-primary">{{ item.highlighted_title.match|striptags }}</span>{{ item.highlighted_title.end|truncatechars:20 | striptags }}
                                                 {% else %}
                                                     {{ item.post.title|striptags }}
                                                 {% endif %}
@@ -66,7 +67,7 @@
                                             {% if item.highlighted_content %}
                                                 {{ item.highlighted_content.start|striptags }}<span class="color-primary">{{ item.highlighted_content.match|striptags }}</span>{{ item.highlighted_content.end|striptags }}
                                             {% else %}
-                                                {{ item.post.content|striptags }}
+                                                {{ item.post.content|truncatechars:70 | striptags }}
                                             {% endif %}
                                         </p>
                                     </div>
@@ -75,33 +76,37 @@
                                     {% endfor %}
                                 </div>
                             </div>
-                            {% comment %} 페이지 네이션 {% endcomment %}
-                            {% comment %} <div class="card-footer border-0 pt-30 pb-40 px-0 bg-transparent">
-                                <nav class="dm-page ">
-                                    <ul class="dm-pagination d-flex">
-                                        <li class="dm-pagination__item">
-                                            <a href="#" class="dm-pagination__link pagination-control"><span class="la la-angle-left"></span></a>
-                                            <a href="#" class="dm-pagination__link"><span class="page-number">1</span></a>
-                                            <a href="#" class="dm-pagination__link active"><span class="page-number">2</span></a>
-                                            <a href="#" class="dm-pagination__link"><span class="page-number">3</span></a>
-                                            <a href="#" class="dm-pagination__link pagination-control"><span class="page-number">...</span></a>
-                                            <a href="#" class="dm-pagination__link"><span class="page-number">12</span></a>
-                                            <a href="#" class="dm-pagination__link pagination-control"><span class="la la-angle-right"></span></a>
-                                            <a href="#" class="dm-pagination__option">
-                                            </a>
-                                        </li>
-                                        <li class="dm-pagination__item">
-                                            <div class="paging-option">
-                                                <select name="page-number" class="page-selection">
-                                                    <option value="20">20/page</option>
-                                                    <option value="40">40/page</option>
-                                                    <option value="60">60/page</option>
-                                                </select>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </nav>
-                            </div> {% endcomment %}
+                        </div>
+                    </div>
+
+                    {% comment %} 작성자가 쓴 글 검색 {% endcomment %}
+
+                    <div class="search-content bg-white radius-xl d-flex mb-50">
+                        <div class="card  border-0 px-sm-30 px-20 w-100">
+                            <div class="card-header flex-1 d-flex align-items-center flex-wrap justify-content-between border-bottom-0 px-0">
+                                <p class="keyword-searching text-dark py-10"> 글쓴이 ( {{ writer_count }} <span class="color-light fw-400">results found
+                                        for</span> “{{ q }}” )</p>
+                                <p class="mb-0 fs-14 color-light fw-400"><a href="{% url "search:writer_result" %}"> 모두 보기 </a></p>
+                            </div>
+
+                            <div class="card-body border-bottom border-top px-0 pb-0 pt-25">
+                                <div class="search-content__keyResult">
+                                    {% for item in writer_posts %}
+                                    <div class="mb-30">
+                                        <a href="#">
+                                            <h6 class="fw-500">
+                                                {{ item.title|striptags }}
+                                            </h6>
+                                        </a>
+                                        <p class="mb-0">
+                                            {{ item.content|striptags }}
+                                        </p>
+                                    </div>
+                                    {% empty %}
+                                        <p> 해당하는 게시물이 없습니다. </p><br>
+                                    {% endfor %}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

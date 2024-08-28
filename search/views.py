@@ -9,16 +9,20 @@ def combined_view(request):
     q = request.GET.get("q", "")
     posts = Post.objects.all()
     posts = posts.order_by("-created_at")
-    writers = posts.select_related("writer")
 
     if q:
         posts = posts.filter(Q(title__icontains=q) | Q(content__icontains=q)).distinct()
-        writers = posts.filter(writer__username__icontains=q)
+
+    writer_posts = Post.objects.all().select_related("writer").order_by("-created_at")
+    if q:
+        writer_posts = writer_posts.filter(writer__username__icontains=q).distinct()
 
     post_count = posts.count()
+    writer_count = writer_posts.count()
+
     posts = posts[:4]
-    writer_count = writers.count()
-    writers = writers[:4]
+    writer_posts = writer_posts[:4]
+
     highlighted_posts = []
 
     for post in posts:
@@ -57,10 +61,10 @@ def combined_view(request):
         request,
         "search/search_result.html",
         {
-            "writers": writers,
+            "writer_posts": writer_posts,
+            "highlighted_posts": highlighted_posts,
             "writer_count": writer_count,
             "post_count": post_count,
-            "highlighted_posts": highlighted_posts,
             "q": q,
         },
     )
