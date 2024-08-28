@@ -6,24 +6,37 @@ from django.views.generic import ListView
 
 # Create your views here.
 def combined_view(request):
+    """ """
     q = request.GET.get("q", "")
     posts = Post.objects.all()
     posts = posts.order_by("-created_at")
-
+    # 제목, 내용 필터링
     if q:
         posts = posts.filter(Q(title__icontains=q) | Q(content__icontains=q)).distinct()
-
+    # 글쓴이 필터링
     writer_posts = Post.objects.all().select_related("writer").order_by("-created_at")
     if q:
         writer_posts = writer_posts.filter(writer__username__icontains=q).distinct()
+    # 카테고리 필터링
+    category_posts = (
+        Post.objects.all().select_related("category").order_by("-created_at")
+    )
+    if q:
+        category_posts = category_posts.filter(category__name__icontains=q).distinct()
 
+    # 검색된 갯수
     post_count = posts.count()
     writer_count = writer_posts.count()
+    category_count = category_posts.count()
 
+    # 최근 4개만 출력
     posts = posts[:4]
     writer_posts = writer_posts[:4]
+    category_posts = category_posts[:4]
 
     highlighted_posts = []
+    highlighted_writers = []
+    highlighted_categories = []
 
     for post in posts:
         title = post.title
@@ -57,14 +70,56 @@ def combined_view(request):
             }
         )
 
+    for post in writer_posts:
+        writer = post.writer.username
+
+        q_writer_position = writer.find(q)
+        if q_writer_position != -1:
+            highlighted_writer = {
+                "start": writer[:q_writer_position],
+                "match": writer[q_writer_position : q_writer_position + len(q)],
+                "end": writer[q_writer_position + len(q) :],
+            }
+        else:
+            highlighted_writer = None
+
+        highlighted_writers.append(
+            {
+                "post": post,
+                "highlighted_writer": highlighted_writer,
+            }
+        )
+
+    for post in category_posts:
+        category = post.category.name
+
+        q_category_position = category.find(q)
+        if q_category_position != -1:
+            highlighted_category = {
+                "start": category[:q_category_position],
+                "match": category[q_category_position : q_category_position + len(q)],
+                "end": category[q_category_position + len(q) :],
+            }
+        else:
+            highlighted_category = None
+
+        highlighted_categories.append(
+            {
+                "post": post,
+                "highlighted_category": highlighted_category,
+            }
+        )
+
     return render(
         request,
         "search/search_result.html",
         {
-            "writer_posts": writer_posts,
+            "writer_posts": highlighted_writers,
             "highlighted_posts": highlighted_posts,
+            "highlighted_categories": highlighted_categories,
             "writer_count": writer_count,
             "post_count": post_count,
+            "category_count": category_count,
             "q": q,
         },
     )

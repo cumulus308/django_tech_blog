@@ -41,7 +41,7 @@
         <div class="col-12">
             <div class="tab-content" id="pills-tabContent">
                 <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-                    {% comment %} 제목 & 내용 검색 {% endcomment %}
+                    {% comment %} 제목 & 내용 검색 헤드{% endcomment %}
                     <div class="search-content bg-white radius-xl d-flex mb-50">
                         <div class="card  border-0 px-sm-30 px-20 w-100">
                             <div class="card-header flex-1 d-flex align-items-center flex-wrap justify-content-between border-bottom-0 px-0">
@@ -49,7 +49,7 @@
                                         for</span> “{{ q }}” )</p>
                                 <p class="mb-0 fs-14 color-light fw-400"><a href="{% url "search:title_content_result" %}"> 모두 보기 </a></p>
                             </div>
-
+                            {% comment %} 게시물 {% endcomment %}
                             <div class="card-body border-bottom border-top px-0 pb-0 pt-25">
                                 <div class="search-content__keyResult">
                                     {% for item in highlighted_posts %}
@@ -57,7 +57,7 @@
                                         <a href="#">
                                             <h6 class="fw-500">
                                                 {% if item.highlighted_title %}
-                                                    {{ item.highlighted_title.start|striptags }}<span class="color-primary">{{ item.highlighted_title.match|striptags }}</span>{{ item.highlighted_title.end|truncatechars:20 | striptags }}
+                                                    {{ item.highlighted_title.start|striptags }}<span class="color-primary">{{ item.highlighted_title.match|striptags }}</span>{{ item.highlighted_title.end|truncatechars:20 | striptags }} <span class="color-light fw-400"> - (by. {{ item.post.writer }}) </span>
                                                 {% else %}
                                                     {{ item.post.title|striptags }}
                                                 {% endif %}
@@ -79,7 +79,7 @@
                         </div>
                     </div>
 
-                    {% comment %} 작성자가 쓴 글 검색 {% endcomment %}
+                    {% comment %} 작성자가 쓴 글 검색 헤드 {% endcomment %}
 
                     <div class="search-content bg-white radius-xl d-flex mb-50">
                         <div class="card  border-0 px-sm-30 px-20 w-100">
@@ -88,19 +88,47 @@
                                         for</span> “{{ q }}” )</p>
                                 <p class="mb-0 fs-14 color-light fw-400"><a href="{% url "search:writer_result" %}"> 모두 보기 </a></p>
                             </div>
-
+                            {% comment %} 게시물 {% endcomment %}
                             <div class="card-body border-bottom border-top px-0 pb-0 pt-25">
                                 <div class="search-content__keyResult">
                                     {% for item in writer_posts %}
                                     <div class="mb-30">
                                         <a href="#">
                                             <h6 class="fw-500">
-                                                {{ item.title|striptags }}
+                                                {{ item.post.title|striptags }}<span class="color-light fw-400"> - (by. {{ item.highlighted_writer.start|striptags }}<span class="color-primary">{{ item.highlighted_writer.match|striptags }}</span>{{ item.highlighted_writer.end|striptags }}) </span>
                                             </h6>
                                         </a>
                                         <p class="mb-0">
-                                            {{ item.content|striptags }}
+                                            {{ item.post.content|striptags }}
                                         </p>
+                                    </div>
+                                    {% empty %}
+                                        <p> 해당하는 게시물이 없습니다. </p><br>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% comment %} 카테고리 검색 검색 헤드 {% endcomment %}
+
+                    <div class="search-content bg-white radius-xl d-flex mb-50">
+                        <div class="card  border-0 px-sm-30 px-20 w-100">
+                            <div class="card-header flex-1 d-flex align-items-center flex-wrap justify-content-between border-bottom-0 px-0">
+                                <p class="keyword-searching text-dark py-10"> 카테고리 ( {{ post_count }} <span class="color-light fw-400">results found
+                                        for</span> “{{ q }}” )</p>
+                                <p class="mb-0 fs-14 color-light fw-400"><a href="{% url "search:writer_result" %}"> 모두 보기 </a></p>
+                            </div>
+                            {% comment %} 게시물 {% endcomment %}
+                            <div class="card-body border-bottom border-top px-0 pb-0 pt-25">
+                                <div class="search-content__keyResult">
+                                    {% for item in highlighted_categories %}
+                                    <div class="mb-30">
+                                        <a href="#">
+                                            <h6 class="fw-500">
+                                                {{ item.highlighted_category.start }}<span class="color-primary">{{ item.highlighted_category.match }}</span>{{ item.highlighted_category.end }}
+                                            </h6>
+                                        </a>
                                     </div>
                                     {% empty %}
                                         <p> 해당하는 게시물이 없습니다. </p><br>
