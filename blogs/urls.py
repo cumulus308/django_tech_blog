@@ -7,6 +7,7 @@ from .views import (
     PostDeleteView,
     CommentUpdateView,
     CommentDeleteView,
+    ToggleBookmarkView,
 )
 
 app_name = "blogs"
@@ -22,5 +23,10 @@ urlpatterns = [
     ),
     path(
         "comment/<int:pk>/delete/", CommentDeleteView.as_view(), name="comment_delete"
+    ),
+    path(
+        "post/<int:post_id>/toggle-bookmark/",
+        ToggleBookmarkView.as_view(),
+        name="toggle_bookmark",
     ),
 ]

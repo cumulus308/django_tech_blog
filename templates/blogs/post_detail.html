@@ -19,6 +19,18 @@
                     <div class="breadcrumb-action justify-content-center flex-wrap">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
+                                <li class="breadcrumb-item">
+                                    <form method="post" action="{% url 'blogs:toggle_bookmark' post.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit">
+                                            {% if is_bookmarked %}
+                                                Remove Bookmark
+                                            {% else %}
+                                                Add Bookmark
+                                            {% endif %}
+                                        </button>
+                                    </form>
+                                </li>
                                 {% if user.is_authenticated and user == post.writer %}
                                     <li class="breadcrumb-item">
                                         <a href="{% url 'blogs:post_update' post.pk %}">{% translate "Edit" %}</a>
