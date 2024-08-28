@@ -43,6 +43,20 @@
                                                     {% endif %}
                                                 </div>
 
+                                                <div class="form-group mb-20">
+                                                    <label for="email">Email Adress</label>
+                                                    <input value="{% if form and form.data.email %} {{form.data.email}} {% else %} {% endif %}" type="email" class="form-control" name="email" id="email" placeholder="Email address" required>
+                                                    {% if form and form.errors.email %} <div class="text-danger mt-2">{{form.errors.email}}</div> {% else %} {% endif %}
+                                                </div>
+
+                                                <div class="form-group mb-20">
+                                                    <label for="nickname">nickname</label>
+                                                    <input value="{{ form.nickname.value }}" type="text" class="form-control" id="nickname" name="nickname" placeholder="nickname" required>
+                                                    {% if form.nickname.errors %}
+                                                        <div class="text-danger mt-2">{{ form.username.errors }}</div>
+                                                    {% endif %}
+                                                </div>
+
                                                 <div class="form-group mb-15">
                                                     <label for="password1">Password</label>
                                                     <div class="position-relative">

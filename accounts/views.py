@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib.auth.views import LoginView
+
+from accounts.forms import CustomUserCreationForm
 
 
 # Create your views here.
@@ -12,7 +13,7 @@ def index(request):
 
 
 class SignUpView(CreateView):
-    form_class = UserCreationForm
+    form_class = CustomUserCreationForm
     template_name = "accounts/signup.html"
     success_url = reverse_lazy("accounts:login")  # 회원가입 후 로그인 페이지로 리디렉션
 
