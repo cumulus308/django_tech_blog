@@ -44,10 +44,11 @@
                     <div class="search-content bg-white radius-xl d-flex mb-50">
                         <div class="card  border-0 px-sm-30 px-20">
                             <div class="card-header flex-1 d-flex align-items-center flex-wrap justify-content-between border-bottom-0 px-0">
-                                {% comment %} <p class="keyword-searching text-dark py-10">207 <span class="color-light fw-400">results found
-                                        for</span> “Keyword”</p>
-                                <p class="mb-0 fs-14 color-light fw-400 ">Showing 1-10 of 76 results</p> {% endcomment %}
+                                <p class="keyword-searching text-dark py-10">{{ post_count }} <span class="color-light fw-400">results found
+                                        for</span> “{{ q }}”</p>
+                                <p class="mb-0 fs-14 color-light fw-400 ms-30">Showing 1-10 of 76 results</p>
                             </div>
+
                             <div class="card-body border-bottom border-top px-0 pb-0 pt-25">
                                 <div class="search-content__keyResult">
                                     {% for item in highlighted_posts %}
@@ -74,7 +75,8 @@
                                     {% endfor %}
                                 </div>
                             </div>
-                            <div class="card-footer border-0 pt-30 pb-40 px-0 bg-transparent">
+                            {% comment %} 페이지 네이션 {% endcomment %}
+                            {% comment %} <div class="card-footer border-0 pt-30 pb-40 px-0 bg-transparent">
                                 <nav class="dm-page ">
                                     <ul class="dm-pagination d-flex">
                                         <li class="dm-pagination__item">
@@ -99,7 +101,7 @@
                                         </li>
                                     </ul>
                                 </nav>
-                            </div>
+                            </div> {% endcomment %}
                         </div>
                     </div>
                 </div>
