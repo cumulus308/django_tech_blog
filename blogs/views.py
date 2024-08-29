@@ -113,6 +113,11 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         form.instance.writer = self.request.user
         return super().form_valid(form)
 
+    def form_invalid(self, form):
+        context = self.get_context_data(form=form)
+        context["errors"] = form.errors
+        return self.render_to_response(context)
+
     def get_success_url(self):
         return reverse_lazy("blogs:post_detail", kwargs={"pk": self.object.pk})
 
@@ -151,7 +156,9 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        return super().form_invalid(form)
+        context = self.get_context_data(form=form)
+        context["errors"] = form.errors
+        return self.render_to_response(context)
 
 
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):

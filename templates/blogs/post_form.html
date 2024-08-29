@@ -7,6 +7,8 @@
 {% load static %}
 
 {% block content %}
+
+
 <div class="dm-page-content">
     <div class="container-fluid">
         <div class="mailbox-wrapper">
@@ -33,7 +35,7 @@
                                 <div>
                                     <div class="form-group">
                                         <label for="mail-subject" class="il-gray fs-14 fw-500 align-center mb-10"></label>
-                                        <input type="text" name="title" class="form-control form-control-lg" id="mail-subject" placeholder="제목을 입력하세요" value="{{ post.title }}">
+                                        <input type="text" name="title" class="form-control form-control-lg" id="mail-subject" placeholder="제목을 입력하세요" value="{{ form.title.value|default:'' }}">
                                     </div>
                                 </div>
 
@@ -66,10 +68,10 @@
 
                                 <div class="mailCompose-form-content">
                                     <div class="form-group">
-                                        <textarea name="content" id="mail-reply-message2" class="form-control-lg" placeholder="Type your message...">{{ post.content }}</textarea>
+                                        <textarea name="content" id="mail-reply-message2" class="form-control-lg" placeholder="Type your message...">{{ form.content.value|default:'' }}</textarea>
                                     </div>
                                 </div>
-                                <input type="hidden" name="category" id="selectedCategory">
+                                <input type="hidden" name="category" id="selectedCategory" value="{{ form.category.value|default:'' }}">
                                 <button type="submit" class="btn btn-primary btn-default btn-squared btn-shadow-primary ">제출
                                 </button>
                             </form>
@@ -82,6 +84,19 @@
         </div>
     </div>
 </div>
+{% if errors %}
+    <script>
+        var errorMessages = "";
+        {% for field, error_list in errors.items %}
+            {% for error in error_list %}
+                errorMessages += "{{ error }}\n";
+            {% endfor %}
+        {% endfor %}
+        alert(errorMessages);
+    </script>
+{% endif %}
+{% endblock %}
+
 {% block extra_js %}
 <script>
     function selectCategory(event, categoryName, categoryId) {
@@ -89,6 +104,23 @@
         document.getElementById('selectedCategory').value = categoryId;
         document.querySelector('.btn-link').innerHTML = categoryName + ' <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg replaced-svg"><polyline points="6 9 12 15 18 9"></polyline></svg>';
     }
-    </script>
+
+    function selectCategory(event, categoryName, categoryId) {
+        event.preventDefault();
+        document.getElementById('selectedCategory').value = categoryId;
+        document.querySelector('.btn-link').innerHTML = categoryName + ' <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg replaced-svg"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+    }
+
+    // 페이지 로드 시 선택된 카테고리 표시
+    window.onload = function() {
+        var selectedCategoryId = document.getElementById('selectedCategory').value;
+        if (selectedCategoryId) {
+            var categoryElement = document.querySelector('[data-category-id="' + selectedCategoryId + '"]');
+            if (categoryElement) {
+                selectCategory(new Event('click'), categoryElement.textContent, selectedCategoryId);
+            }
+        }
+    }
+
+</script>
 {% endblock  %}
-{% endblock %}
