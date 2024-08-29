@@ -5,7 +5,7 @@
 groups = ["default"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:f12ce55cf974f0cef03628699ca2d41a74f71d9ad7a148b32fb8668579955aae"
+content_hash = "sha256:d14669cb94aaec817205c505d20bbdd138781485d7593aec34a48b932bcb2cae"
 
 [[metadata.targets]]
 requires_python = "==3.12.*"
@@ -211,6 +211,20 @@ dependencies = [
 files = [
     {file = "matplotlib_inline-0.1.7-py3-none-any.whl", hash = "sha256:df192d39a4ff8f21b1895d72e6a13f5fcc5099f00fa84384e0ea28c2cc0653ca"},
     {file = "matplotlib_inline-0.1.7.tar.gz", hash = "sha256:8423b23ec666be3d16e16b60bdd8ac4e86e840ebd1dd11a30b9f117f2fa0ab90"},
+]
+
+[[package]]
+name = "model-bakery"
+version = "1.19.5"
+requires_python = ">=3.8"
+summary = "Smart object creation facility for Django."
+groups = ["default"]
+dependencies = [
+    "django>=4.2",
+]
+files = [
+    {file = "model_bakery-1.19.5-py3-none-any.whl", hash = "sha256:09ecbbf124d32614339581b642c82ac4a73147442f598c7bad23eece24187e5c"},
+    {file = "model_bakery-1.19.5.tar.gz", hash = "sha256:37cece544a33f8899ed8f0488cd6a9d2b0b6925e7b478a4ff2786dece8c63745"},
 ]
 
 [[package]]

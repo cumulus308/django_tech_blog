@@ -4,6 +4,7 @@ from django.db import models
 
 # Create your models here.
 class CustomUser(AbstractUser):
+    username = models.CharField(max_length=15, unique=True)
     email = models.EmailField(unique=True)
     nickname = models.CharField(max_length=30, unique=True)
 

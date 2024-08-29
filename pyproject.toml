@@ -12,6 +12,7 @@ dependencies = [
     "ipython>=8.26.0",
     "pillow>=10.4.0",
     "django-debug-toolbar>=4.4.6",
+    "model-bakery>=1.19.5",
 ]
 requires-python = "==3.12.*"
 readme = "README.md"

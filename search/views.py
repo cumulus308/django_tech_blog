@@ -2,126 +2,89 @@ from django.shortcuts import render
 from django.db.models import Q
 from blogs.models import Category, Post
 from django.views.generic import ListView
+from accounts.models import CustomUser
+
+
+def split_string_via_match(text, search_text):
+    """
+    text에서 search_text와 match가 발생할 시 매치된 텍스트 이전 텍스트, 매치된 텍스트, 매치된 텍스트 이후 텍스트를 반환
+    match가 발생하지 않는 경우 None를 반환
+    """
+    match_pos = text.find(search_text)
+    result = None
+
+    if match_pos != -1:
+        result = {
+            "start": text[:match_pos],
+            "match": text[match_pos : match_pos + len(search_text)],
+            "end": text[match_pos + len(search_text) :],
+        }
+
+    return result
 
 
 # Create your views here.
 def combined_view(request):
-    """ """
-    q = request.GET.get("q", "")
-    posts = Post.objects.all()
-    posts = posts.order_by("-created_at")
-    # 제목, 내용 필터링
-    if q:
-        posts = posts.filter(Q(title__icontains=q) | Q(content__icontains=q)).distinct()
-    # 글쓴이 필터링
-    writer_posts = Post.objects.all().select_related("writer").order_by("-created_at")
-    if q:
-        writer_posts = writer_posts.filter(writer__username__icontains=q).distinct()
-    # 카테고리 필터링
-    category_posts = (
-        Post.objects.all().select_related("category").order_by("-created_at")
-    )
-    if q:
-        category_posts = category_posts.filter(category__name__icontains=q).distinct()
+    """
+    이렇게 함수에 대한 독스트링을 적어주시면 보수하기 편합니다.
 
-    # 검색된 갯수
+    request = {
+        q: string, 검색할 문자열
+    }
+
+    response = {
+        posts : 4개의 포스트
+        writers : 4개의 유저
+        categories:4개 카테고리
+
+        writer_count: 전체 작성자의 수
+        post_count: 전체 포스트의 수
+        category_count: 전체 카테고리의 수
+    }
+    """
+    # 초기화
+    searching_string = request.GET.get("q", None)
+    posts = Post.objects.all().order_by("-created_at")
+
+    # q가 있는 경우(searching_string가 있는 경우)
+    if searching_string:
+        posts = posts.filter(
+            Q(title__icontains=searching_string)
+            | Q(content__icontains=searching_string)
+        )
+
+    # 추가로 로드할 모델의 pk를 가져옵니다(db hit 없음)
+    posts_writer_pk = posts.values_list("writer_id", flat=True).distinct()
+    posts_category_pk = posts.values_list("category_id", flat=True).distinct()
+
+    # pk를 바탕으로 데이터를 불러옵니다(db hit 발생)
+    writers = CustomUser.objects.filter(pk__in=posts_writer_pk)  # => 쿼리셋
+    categories = Category.objects.filter(pk__in=posts_category_pk)
+
+    # 각 데이터를 카운팅
     post_count = posts.count()
-    writer_count = writer_posts.count()
-    category_count = category_posts.count()
+    writer_count = writers.count()
+    category_count = categories.count()
 
-    # 최근 4개만 출력
-    posts = posts[:4]
-    writer_posts = writer_posts[:4]
-    category_posts = category_posts[:4]
+    # 하이라이트 관련 끝입니다.
+    if searching_string:
+        highlighted_titles = [
+            split_string_via_match(post.title, searching_string) for post in posts[:4]
+        ]
 
-    highlighted_posts = []
-    highlighted_writers = []
-    highlighted_categories = []
-
-    for post in posts:
-        title = post.title
-        content = post.content
-
-        q_title_position = title.find(q)
-        if q_title_position != -1:
-            highlighted_title = {
-                "start": title[:q_title_position],
-                "match": title[q_title_position : q_title_position + len(q)],
-                "end": title[q_title_position + len(q) :],
-            }
-        else:
-            highlighted_title = None
-
-        q_content_position = content.find(q)
-        if q_content_position != -1:
-            highlighted_content = {
-                "start": content[:q_content_position],
-                "match": content[q_content_position : q_content_position + len(q)],
-                "end": content[q_content_position + len(q) :],
-            }
-        else:
-            highlighted_content = None
-
-        highlighted_posts.append(
-            {
-                "post": post,
-                "highlighted_title": highlighted_title,
-                "highlighted_content": highlighted_content,
-            }
-        )
-
-    for post in writer_posts:
-        writer = post.writer.username
-
-        q_writer_position = writer.find(q)
-        if q_writer_position != -1:
-            highlighted_writer = {
-                "start": writer[:q_writer_position],
-                "match": writer[q_writer_position : q_writer_position + len(q)],
-                "end": writer[q_writer_position + len(q) :],
-            }
-        else:
-            highlighted_writer = None
-
-        highlighted_writers.append(
-            {
-                "post": post,
-                "highlighted_writer": highlighted_writer,
-            }
-        )
-
-    for post in category_posts:
-        category = post.category.name
-        category_pk = post.category.pk
-        q_category_position = category.find(q)
-        if q_category_position != -1:
-            highlighted_category = {
-                "start": category[:q_category_position],
-                "match": category[q_category_position : q_category_position + len(q)],
-                "end": category[q_category_position + len(q) :],
-            }
-        else:
-            highlighted_category = None
-
-        highlighted_categories.append(
-            {
-                "post": post,
-                "highlighted_category": highlighted_category,
-                "category_pk": category_pk,
-            }
-        )
-
+    # 반환
     return render(
         request,
         "search/search_result.html",
         {
-            "writer_posts": highlighted_writers,
-            "highlighted_posts": highlighted_posts,
-            "highlighted_categories": highlighted_categories,
+            "writer_posts": writers[:4],
+            "highlighted_posts": posts[:4],
+            "highlighted_categories": categories[:4],
+            "highlighted_titles": highlighted_titles,
             "writer_count": writer_count,
             "post_count": post_count,
             "category_count": category_count,
-            "q": q,
+            "q": "",
         },
     )
 
@@ -305,3 +268,124 @@ class CategorySearchDetailListView(ListView):
 
         print(queryset)
         return queryset
+
+
+# def combined_view(request):
+#     """ """
+#     q = request.GET.get("q", "")
+#     posts = Post.objects.all()
+#     posts = posts.order_by("-created_at")
+#     # 제목, 내용 필터링
+#     if q:
+#         posts = posts.filter(Q(title__icontains=q) | Q(content__icontains=q)).distinct()
+
+#     # 글쓴이 필터링
+#     if q:
+#         writers = writers.filter(writer__username__icontains=q).distinct()
+
+#     # 카테고리 필터링
+#     categories = Category.objects.all().order_by("-created_at")
+#     if q:
+#         categories = categories.filter(category__name__icontains=q).distinct()
+
+#     # 검색된 갯수
+#     post_count = posts.count()
+#     writer_count = writers.count()
+#     category_count = categories.count()
+
+#     # 최근 4개만 출력
+#     posts = posts[:4]
+#     writers = writers[:4]
+#     categories = categories[:4]
+
+#     highlighted_posts = []
+#     highlighted_writers = []
+#     highlighted_categories = []
+
+#     for post in posts:
+#         title = post.title
+#         content = post.content
+
+#         q_title_position = title.find(q)
+#         if q_title_position != -1:
+#             highlighted_title = {
+#                 "start": title[:q_title_position],
+#                 "match": title[q_title_position : q_title_position + len(q)],
+#                 "end": title[q_title_position + len(q) :],
+#             }
+#         else:
+#             highlighted_title = None
+
+#         q_content_position = content.find(q)
+#         if q_content_position != -1:
+#             highlighted_content = {
+#                 "start": content[:q_content_position],
+#                 "match": content[q_content_position : q_content_position + len(q)],
+#                 "end": content[q_content_position + len(q) :],
+#             }
+#         else:
+#             highlighted_content = None
+
+#         highlighted_posts.append(
+#             {
+#                 "post": post,
+#                 "highlighted_title": highlighted_title,
+#                 "highlighted_content": highlighted_content,
+#             }
+#         )
+
+#     for writer in writers:
+#         print(writer)
+#         writer = writer.writer.username
+
+#         q_writer_position = writer.find(q)
+#         if q_writer_position != -1:
+#             highlighted_writer = {
+#                 "start": writer[:q_writer_position],
+#                 "match": writer[q_writer_position : q_writer_position + len(q)],
+#                 "end": writer[q_writer_position + len(q) :],
+#             }
+#         else:
+#             highlighted_writer = None
+
+#         highlighted_writers.append(
+#             {
+#                 "post": post,
+#                 "highlighted_writer": highlighted_writer,
+#             }
+#         )
+
+#     for category in categories:
+#         category_pk = category.pk
+#         category = category.name
+#         q_category_position = category.find(q)
+#         if q_category_position != -1:
+#             highlighted_category = {
+#                 "start": category[:q_category_position],
+#                 "match": category[q_category_position : q_category_position + len(q)],
+#                 "end": category[q_category_position + len(q) :],
+#             }
+#         else:
+#             highlighted_category = None
+
+#         highlighted_categories.append(
+#             {
+#                 "category": category,
+#                 "highlighted_category": highlighted_category,
+#                 "category_pk": category_pk,
+#             }
+#         )
+
+#     return render(
+#         request,
+#         "search/search_result.html",
+#         {
+#             "writer_posts": highlighted_writers,
+#             "highlighted_posts": highlighted_posts,
+#             "highlighted_categories": highlighted_categories,
+#             "writer_count": writer_count,
+#             "post_count": post_count,
+#             "category_count": category_count,
+#             "q": q,
+#         },
+#     )
