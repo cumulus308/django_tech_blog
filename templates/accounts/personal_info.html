@@ -1,0 +1,166 @@
+{% extends 'layout/app.html' %}
+
+{% block title %} Profile Settings {% endblock %}
+
+{% load i18n %}
+
+{% load static %}
+
+{% block content %}
+<div class="profile-setting ">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb-main">
+                    <h4 class="text-capitalize breadcrumb-title">{% translate "social-profile-setting" %}</h4>
+                </div>
+            </div>
+            <div class="col-xxl-3 col-lg-4 col-sm-5">
+                <div class="card mb-25">
+                    <div class="card-body text-center p-0">
+                        <div class="account-profile border-bottom pt-25 px-25 pb-0 flex-column d-flex align-items-center ">
+                            <div class="ap-img mb-20 pro_img_wrapper">
+                                <input id="file-upload" type="file" name="fileUpload" class="d-none">
+                                <label for="file-upload">
+                                    <img class="ap-img__main rounded-circle wh-120" src="{% static 'img/author/profile.png' %}" alt="profile">
+                                    <span class="cross" id="remove_pro_pic">
+                                        <img src="{% static 'img/svg/camera.svg' %}" alt="camera" class="svg">
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="ap-nameAddress pb-3">
+                                <h5 class="ap-nameAddress__title">Duran Clayton</h5>
+                                <p class="ap-nameAddress__subTitle fs-14 m-0">UI/UX Designer</p>
+                            </div>
+                        </div>
+                        <div class="ps-tab p-20 pb-25">
+                            <div class="nav flex-column text-start" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                                <a class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true">
+                                    <img src="{% static 'img/svg/user.svg' %}" alt="user" class="svg">Edit profile</a>
+                                <a class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">
+                                    <img src="{% static 'img/svg/key.svg' %}" alt="key" class="svg">change password</a>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xxl-9 col-lg-8 col-sm-7">
+                <div class="mb-50">
+                    <div class="tab-content" id="v-pills-tabContent">
+                        <div class="tab-pane fade  show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+                            <div class="edit-profile mt-25">
+                                <div class="card">
+                                    <div class="card-header px-sm-25 px-3">
+                                        <div class="edit-profile__title">
+                                            <h6>Edit Profile</h6>
+                                            <span class="fs-13 color-light fw-400">Set up your personal
+                                                information</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row justify-content-center">
+                                            <div class="col-xxl-6 col-lg-8 col-sm-10">
+                                                <div class="edit-profile__body mx-lg-20">
+                                                    <div class="form-group mb-20">
+                                                        <label for="id_username">ID</label>
+                                                        <input type="text" class="form-control" id="id_username" value="{{ user.username }}" readonly>
+                                                    </div>
+                                                    <div class="form-group mb-20">
+                                                        <label for="id_last_name">Last Name</label>
+                                                        <input type="text" class="form-control" id="id_last_name" value="{{ user.last_name }}" readonly>
+                                                    </div>
+                                                    <form method="post">
+                                                        {% csrf_token %}
+                                                        <div class="form-group mb-20">
+                                                            <label for="id_email">Email</label>
+                                                            <input type="email" class="form-control" id="id_email" name="email" value="{{ form.email.value|default_if_none:'' }}" placeholder="example@example.com">
+                                                        </div>
+                                                        <div class="form-group mb-20">
+                                                            <label for="id_nickname">Nickname</label>
+                                                            <input type="text" class="form-control" id="id_nickname" name="nickname" value="{{ form.nickname.value|default_if_none:'' }}" placeholder="Your nickname">
+                                                        </div>
+                                                        <div class="button-group d-flex flex-wrap pt-30 mb-15">
+                                                            <button type="submit" class="btn btn-primary btn-default btn-squared me-15 text-capitalize btn-sm">Update Profile</button>
+                                                            <button type="button" class="btn btn-light btn-default btn-squared fw-400 text-capitalize btn-sm">Cancel</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
+                            <div class="edit-profile mt-25">
+                                <div class="card">
+                                    <div class="card-header  px-sm-25 px-3">
+                                        <div class="edit-profile__title">
+                                            <h6>change password</h6>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row justify-content-center">
+                                            <div class="col-xxl-6 col-lg-8 col-sm-10">
+                                                <div class="edit-profile__body mx-lg-20">
+                                                    <form method="post" action="{% url 'accounts:password_change' %}">
+                                                        {% csrf_token %}
+                                                        <div class="form-group mb-20">
+                                                            <label for="id_old_password">Old password</label>
+                                                            <input type="password" class="form-control" id="id_old_password" name="old_password">
+                                                        </div>
+                                                        <div class="form-group mb-1">
+                                                            <label for="id_new_password1">New password</label>
+                                                            <div class="position-relative">
+                                                                <input id="id_new_password1" type="password" class="form-control pe-50" name="new_password1">
+                                                                <span toggle="#id_new_password1" class="fa fa-fw fa-eye-slash text-light fs-16 field-icon toggle-password2"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group mb-1">
+                                                            <label for="id_new_password2">Confirm new password</label>
+                                                            <div class="position-relative">
+                                                                <input id="id_new_password2" type="password" class="form-control pe-50" name="new_password2">
+                                                                <span toggle="#id_new_password2" class="fa fa-fw fa-eye-slash text-light fs-16 field-icon toggle-password2"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="button-group d-flex flex-wrap pt-45 mb-35">
+                                                            <button type="submit" class="btn btn-primary btn-default btn-squared me-15 text-capitalize">Save Changes</button>
+                                                            <button type="button" class="btn btn-light btn-default btn-squared fw-400 text-capitalize">Cancel</button>
+                                                        </div>
+                                                    </form>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade " id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
+
+                        </div>
+                        <div class="tab-pane fade" id="v-pills-notification" role="tabpanel" aria-labelledby="v-pills-notification-tab">
+                            <div class="edit-profile edit-social mt-25">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% if messages %}
+    <script>
+        var errorMessages = "";
+        {% for message in messages %}
+            errorMessages += "{{ message }}\n";
+        {% endfor %}
+        alert(errorMessages);
+    </script>
+{% endif %}
+{% endblock %}

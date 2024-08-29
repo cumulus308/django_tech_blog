@@ -1707,8 +1707,7 @@
                                     />
                                 </div>
                                 <div>
-                                    <h6>{{ user.get_full_name }}</h6>
-                                    <span>UI Designer</span>
+                                    <h6><a href="{% url "accounts:profile_edit" user.pk %}">{{ user.username }}</a></h6>
                                 </div>
                             </div>
                             <div class="nav-author__options">

@@ -99,11 +99,6 @@
 
 {% block extra_js %}
 <script>
-    function selectCategory(event, categoryName, categoryId) {
-        event.preventDefault();
-        document.getElementById('selectedCategory').value = categoryId;
-        document.querySelector('.btn-link').innerHTML = categoryName + ' <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg replaced-svg"><polyline points="6 9 12 15 18 9"></polyline></svg>';
-    }
 
     function selectCategory(event, categoryName, categoryId) {
         event.preventDefault();
