@@ -1,4 +1,3 @@
-from django.contrib import messages
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
@@ -40,7 +39,6 @@ class PostDetailView(View):
         post.hit += 1
         post.save()
 
-        # 북마크 상태를 확인하여 컨텍스트에 추가
         is_bookmarked = False
         if request.user.is_authenticated:
             is_bookmarked = Bookmark.objects.filter(
@@ -58,6 +56,7 @@ class PostDetailView(View):
             "post": post,
             "categories": Category.objects.all(),
             "comments": post.comments.all().order_by("created_at"),
+            "parent_comment": post.comments.filter(parent=None),
             "comment_form": CommentForm(),
             "is_bookmarked": is_bookmarked,
             "is_following": is_following,
@@ -68,7 +67,6 @@ class PostDetailView(View):
         post = self.get_object()
 
         if not request.user.is_authenticated:
-            messages.error(request, "You need to be logged in to comment.")
             return redirect("accounts:login")
 
         form = CommentForm(request.POST)
@@ -76,9 +74,23 @@ class PostDetailView(View):
             comment = form.save(commit=False)
             comment.writer = request.user
             comment.post = post
+
+            parent_id = form.cleaned_data.get("parent")
+            if parent_id and isinstance(parent_id, Comment):
+                parent = parent_id
+                parent_id = parent.id  # Comment 객체에서 id 추출
+
+            if parent_id:
+                try:
+                    parent = Comment.objects.get(id=parent_id)
+                    if parent.is_parent:
+                        comment.parent = parent
+                except Comment.DoesNotExist:
+                    return JsonResponse(
+                        {"error": "Parent comment does not exist."}, status=400
+                    )
+
             comment.save()
-            messages.success(request, "Your comment has been added successfully.")
-            return redirect("blogs:post_detail", pk=post.pk)
 
         context = {
             "post": post,
@@ -132,19 +144,12 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset=queryset)
-        if obj:
-            messages.info(self.request, "You are now editing your post.")
         return obj
 
     def form_valid(self, form):
-        messages.success(self.request, "Your post has been updated successfully.")
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        messages.error(
-            self.request,
-            "There was an error updating your post. Please check the form.",
-        )
         return super().form_invalid(form)
 
 
@@ -194,16 +199,12 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return self.request.user == comment.writer
 
     def handle_no_permission(self):
-        messages.error(
-            self.request, "You do not have permission to delete this comment."
-        )
         return redirect("blogs:post_detail", pk=self.get_object().post.pk)
 
     def get_success_url(self):
         return reverse("blogs:post_detail", kwargs={"pk": self.object.post.pk})
 
     def post(self, request, *args, **kwargs):
-        messages.success(self.request, "Your comment has been deleted successfully.")
         return self.delete(request, *args, **kwargs)
 
 
@@ -213,9 +214,8 @@ class ToggleBookmarkView(View):
         if not user.is_authenticated:
             return HttpResponseForbidden()
 
-        # URL에서 전달된 post_id를 사용하여 Post 객체를 가져옵니다.
-        post_id = kwargs.get("post_id")  # 'kwargs'에서 'post_id'를 가져옵니다.
-        post = get_object_or_404(Post, id=post_id)  # post_id로 Post 객체를 가져옵니다.
+        post_id = kwargs.get("post_id")
+        post = get_object_or_404(Post, id=post_id)
 
         bookmark, created = Bookmark.objects.get_or_create(user=user, post=post)
 
@@ -229,25 +229,19 @@ class ToggleFollowView(View):
     def post(self, request, *args, **kwargs):
         user = request.user
         if not user.is_authenticated:
-            messages.error(request, "로그인하지 않았습니다.")
             return redirect(request.META.get("HTTP_REFERER", "/"))
 
-        # 팔로우할 대상 사용자의 ID를 URL에서 가져옵니다.
         follow_user_id = kwargs.get("user_id")
         follow_user = get_object_or_404(CustomUser, id=follow_user_id)
 
-        # 자신을 팔로우하려고 하면 에러를 반환할 수 있습니다.
         if user == follow_user:
-            messages.error(request, "자기 자신을 팔로우할 수 없습니다.")
             return redirect(request.META.get("HTTP_REFERER", "/"))
 
-        # 팔로우 상태를 토글합니다.
         follow, created = Follow.objects.get_or_create(
             follower=user, following=follow_user
         )
 
         if not created:
-            # 이미 팔로우한 상태라면 언팔로우
             follow.delete()
 
         return redirect(request.META.get("HTTP_REFERER", "/"))

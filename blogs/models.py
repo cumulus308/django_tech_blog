@@ -40,6 +40,25 @@ class Comment(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    parent = models.ForeignKey(
+        "self", null=True, blank=True, on_delete=models.CASCADE, related_name="replies"
+    )
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.writer} comment {self.content}"
+
+    @property
+    def children(self):
+        return Comment.objects.filter(parent=self).reverse()
+
+    @property
+    def is_parent(self):
+        if self.parent is None:
+            return True
+        return False
 
 
 class Bookmark(models.Model):
