@@ -39,18 +39,19 @@ class PostDetailView(View):
         post.hit += 1
         post.save()
 
-        is_bookmarked = False
-        if request.user.is_authenticated:
-            is_bookmarked = Bookmark.objects.filter(
-                user=request.user, post=post
-            ).exists()
+        # 북마크 상태 확인
+        is_bookmarked = (
+            Bookmark.objects.filter(user=request.user, post=post).exists()
+            if request.user.is_authenticated
+            else False
+        )
 
-        user_to_follow = post.writer
-        is_following = False
-        if request.user.is_authenticated:
-            is_following = Follow.objects.filter(
-                follower=request.user, following=user_to_follow
-            ).exists()
+        # 팔로우 상태 확인
+        is_following = (
+            Follow.objects.filter(follower=request.user, following=post.writer).exists()
+            if request.user.is_authenticated
+            else False
+        )
 
         context = {
             "post": post,
@@ -78,7 +79,7 @@ class PostDetailView(View):
             parent_id = form.cleaned_data.get("parent")
             if parent_id and isinstance(parent_id, Comment):
                 parent = parent_id
-                parent_id = parent.id  # Comment 객체에서 id 추출
+                parent_id = parent.id
 
             if parent_id:
                 try:

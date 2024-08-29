@@ -38,17 +38,30 @@
                                 </div>
 
                                 <div class="card-body">
-                                    <div class="dropdown dropdown-click float-end" style="margin-top: -10px;">
-                                        <a class="btn-link" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            Category
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg replaced-svg"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    <div class="dm-upload__button">
+                                        <a href="javascript:void(0)" class="btn btn-lg btn-outline-lighten btn-upload" onclick="document.getElementById('upload-1').click()">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg replaced-svg">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                <polyline points="17 8 12 3 7 8"></polyline>
+                                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                                            </svg>
+                                            Click to Upload
                                         </a>
-                                        <div class="dropdown-default dropdown-menu">
-                                            {% for category in categories %}
-                                                <a class="dropdown-item" href="#" data-category-id="{{ category.id }}" onclick="selectCategory(event, '{{ category.name }}', {{ category.id }})">{{ category.name }}</a>
-                                            {% endfor %}
+                                        <div class="dropdown dropdown-click float-end" style="margin-top: -10px;">
+                                            <a class="btn-link" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                Category
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg replaced-svg"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                            </a>
+                                            <div class="dropdown-default dropdown-menu">
+                                                {% for category in categories %}
+                                                    <a class="dropdown-item" href="#" data-category-id="{{ category.id }}" onclick="selectCategory(event, '{{ category.name }}', {{ category.id }})">{{ category.name }}</a>
+                                                {% endfor %}
+                                            </div>
                                         </div>
+                                        <input type="file" name="thumbnail" class="upload-one" id="upload-1" style="display:none;" onchange="document.getElementById('file-name').innerText = this.files[0].name">
                                     </div>
+                                    <p id="file-name"></p>
+
                                 </div>
 
                                 <div class="mailCompose-form-content">
