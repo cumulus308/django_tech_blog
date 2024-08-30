@@ -35,7 +35,7 @@
                                     <form method="post" action="{% url 'blogs:toggle_like' post.pk %}">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-warning btn-default btn-squared btn-transparent-warning ">
-                                            {% if is_bookmarked %}
+                                            {% if is_liked %}
                                                 {% translate "Remove Like" %}
                                             {% else %}
                                                 {% translate "Add Like" %}
@@ -96,7 +96,7 @@
                             </li>
                             <li class="blog-read-time">8 mins read</li>
                         </ul>
-                        <div class="blog-body">
+                        <div class="blog-body post-content">
                             {{ post.content | safe_content }}
                         </div>
                         {% comment %} <div class="blog-tags">

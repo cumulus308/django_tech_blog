@@ -41,6 +41,11 @@
         textarea::-webkit-scrollbar-track {
             background-color: #e9ecef; /* 스크롤바 트랙 색상 설정 */
         }
+        .post-content {
+            word-wrap: break-word;  /* 긴 단어를 줄 바꿈 처리 */
+            word-break: break-word; /* 줄 바꿈 시 단어를 자름 */
+            white-space: normal;    /* 텍스트가 길어지면 자동 줄 바꿈 */
+        }
         </style>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>

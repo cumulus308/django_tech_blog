@@ -95,10 +95,10 @@
                                     <div class="mb-30">
                                         <a href="{% url "search:writer_detail_result"  item.writer.pk%}">
                                             <h6 class="fw-500">
-                                                {% if highlighted_writer %}
-                                                {{ item.highlighted_writer.start|striptags }}<span class="color-primary">{{ item.highlighted_writer.match|striptags }}</span>
+                                                {% if item %}
+                                                    {{ item.highlighted_writer.start|striptags }}<span class="color-primary">{{ item.highlighted_writer.match|striptags }}</span>{{ item.highlighted_writer.end|striptags }}
                                                 {% else %}
-                                                {{ item.writer}}
+                                                    {{ item.writer}}
                                                 {% endif %}
                                             </h6>
                                         </a>
@@ -127,10 +127,10 @@
                                     <div class="mb-30">
                                         <a href="{% url "search:category_detail_result" item.category.pk %}">
                                             <h6 class="fw-500">
-                                                {% if highlighted_writer %}
-                                                {{ item.highlighted_category.start }}<span class="color-primary">{{ item.highlighted_category.match }}</span>{{ item.highlighted_category.end }}
+                                                {% if highlighted_category %}
+                                                    {{ item.highlighted_category.start }}<span class="color-primary">{{ item.highlighted_category.match }}</span>{{ item.highlighted_category.end }}
                                                 {% else %}
-                                                {{ item.category}}
+                                                    {{ item.category }}
                                                 {% endif %}
                                             </h6>
                                         </a>

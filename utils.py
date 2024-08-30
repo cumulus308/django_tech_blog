@@ -8,9 +8,14 @@ def split_string_via_match(text, search_text):
 
     if match_pos != -1:
         result = {
-            "start": text[match_pos - 10 : match_pos],
+            "start": text[max(0, match_pos - 10) : match_pos],
             "match": text[match_pos : match_pos + len(search_text)],
             "end": text[match_pos + len(search_text) :],
         }
 
     return result
+
+
+# def make_query(main, name, searching_string):
+#     for item in main[:4]:
+#         highlighted_item = split_string_via_match(item.name, searching_string)

@@ -28,6 +28,26 @@ class PostListView(ListView):
         queryset = queryset.order_by("-created_at")
         return queryset
 
+    def get_paginate_by(self, queryset):
+        per_page = self.request.GET.get("per_page", 12)
+        return per_page
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        paginator = context["paginator"]
+        page = context["page_obj"]
+        context["is_paginated"] = page.has_other_pages()
+
+        # 페이지 범위 계산
+        if paginator.num_pages <= 9:
+            context["page_range"] = range(1, paginator.num_pages + 1)
+        else:
+            start_index = max(1, page.number - 4)
+            end_index = min(paginator.num_pages, page.number + 4)
+            context["page_range"] = range(start_index, end_index + 1)
+
+        return context
+
 
 class PostDetailView(View):
     def get_object(self):
@@ -54,7 +74,7 @@ class PostDetailView(View):
         )
 
         # 좋아요 상태 확인
-        is_like = (
+        is_liked = (
             Like.objects.filter(user=request.user, post=post).exists()
             if request.user.is_authenticated
             else False
@@ -68,7 +88,7 @@ class PostDetailView(View):
             "comment_form": CommentForm(),
             "is_bookmarked": is_bookmarked,
             "is_following": is_following,
-            "is_like": is_like,
+            "is_liked": is_liked,
         }
         return render(request, "blogs/post_detail.html", context)
 

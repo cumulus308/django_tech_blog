@@ -67,12 +67,19 @@ def combined_view(request):
                 "highlighted_content": highlighted_content,
             }
         )
+        # [i if i==12 else "No" for i in v ]
+        [
+            split_string_via_match(writer.username, searching_string)
+            if searching_string
+            else None
+            for writer in writers[:4]
+        ]
 
     for writer in writers[:4]:
         highlighted_writer = (
             split_string_via_match(writer.username, searching_string)
-            if searching_string
-            else None
+            # if searching_string
+            # else None
         )
         highlighted_writers.append(
             {

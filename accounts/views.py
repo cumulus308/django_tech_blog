@@ -1,11 +1,16 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, UpdateView
+from django.views import View
+from django.views.generic import CreateView
 from django.contrib.auth import login
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.views import PasswordChangeView
-from accounts.forms import CustomUserCreationForm, CustomUserUpdateForm
-from .models import CustomUser
+from accounts.forms import (
+    CustomUserCreationForm,
+    CustomUserUpdateForm,
+    UserProfileUpdateForm,
+)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 
@@ -34,17 +39,37 @@ class CustomLoginView(LoginView):
     template_name = "accounts/login.html"
 
 
-class CustomUserUpdateView(LoginRequiredMixin, UpdateView):
-    model = CustomUser
-    form_class = CustomUserUpdateForm
+class CustomUserUpdateView(LoginRequiredMixin, View):
     template_name = "accounts/personal_info.html"
 
-    def get_object(self, queryset=None):
-        return self.request.user
+    def get(self, request, *args, **kwargs):
+        user_form = CustomUserUpdateForm(instance=request.user)
+        profile_form = UserProfileUpdateForm(instance=request.user.profile)
+        return render(
+            request,
+            self.template_name,
+            {"user_form": user_form, "profile_form": profile_form},
+        )
 
-    def form_valid(self, form):
-        messages.success(self.request, "프로필이 성공적으로 업데이트되었습니다.")
-        return super().form_valid(form)
+    def post(self, request, *args, **kwargs):
+        user_form = CustomUserUpdateForm(
+            request.POST, request.FILES, instance=request.user
+        )
+        profile_form = UserProfileUpdateForm(
+            request.POST, instance=request.user.profile
+        )
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, "프로필이 성공적으로 업데이트되었습니다.")
+            return HttpResponseRedirect(self.get_success_url())
+
+        return render(
+            request,
+            self.template_name,
+            {"user_form": user_form, "profile_form": profile_form},
+        )
 
     def get_success_url(self):
         return reverse_lazy(
