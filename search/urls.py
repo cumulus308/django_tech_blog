@@ -2,9 +2,10 @@ from django.urls import path
 from .views import (
     combined_view,
     TitleContentSearchListView,
-    WriterPostSearchListView,
+    WriterSearchListView,
     CategorySearchListView,
     CategorySearchDetailListView,
+    WriterSearchDetailListView,
 )
 
 app_name = "search"
@@ -16,7 +17,12 @@ urlpatterns = [
         TitleContentSearchListView.as_view(),
         name="title_content_result",
     ),
-    path("writer/", WriterPostSearchListView.as_view(), name="writer_result"),
+    path("writer/", WriterSearchListView.as_view(), name="writer_result"),
+    path(
+        "writer/<int:writer_pk>",
+        WriterSearchDetailListView.as_view(),
+        name="writer_detail_result",
+    ),
     path("category/", CategorySearchListView.as_view(), name="category_result"),
     path(
         "category/<int:category_pk>",

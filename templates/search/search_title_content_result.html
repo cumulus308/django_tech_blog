@@ -54,12 +54,12 @@
                                 <div class="search-content__keyResult">
                                     {% for item in highlighted_posts %}
                                     <div class="mb-30">
-                                        <a href={% url 'blogs:post_detail' item.post.pk %}>
+                                        <a href={% url 'blogs:post_detail' item.post_pk %}>
                                             <h6 class="fw-500">
                                                 {% if item.highlighted_title %}
                                                     {{ item.highlighted_title.start|striptags }}<span class="color-primary">{{ item.highlighted_title.match|striptags }}</span>{{ item.highlighted_title.end|truncatechars:20 | striptags }} <span class="color-light fw-400"> - (by. {{ item.post.writer }}) </span>
                                                 {% else %}
-                                                    {{ item.post.title|striptags }}
+                                                    {{ item.post_title|striptags }}
                                                 {% endif %}
                                             </h6>
                                         </a>
@@ -67,7 +67,7 @@
                                             {% if item.highlighted_content %}
                                                 {{ item.highlighted_content.start|striptags }}<span class="color-primary">{{ item.highlighted_content.match|striptags }}</span>{{ item.highlighted_content.end|striptags }}
                                             {% else %}
-                                                {{ item.post.content|truncatechars:70 | striptags }}
+                                                {{ item.post_content|truncatechars:70 | striptags }}
                                             {% endif %}
                                         </p>
                                     </div>
