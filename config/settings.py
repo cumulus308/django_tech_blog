@@ -43,6 +43,7 @@ PROJECTS_APPS = [
     "accounts",
     "blogs",
     "search",
+    "chatgptapi",
 ]
 
 THIRD_PARTY_APPS = [
