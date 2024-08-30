@@ -44,7 +44,7 @@ class CustomUserUpdateView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         user_form = CustomUserUpdateForm(instance=request.user)
-        profile_form = UserProfileUpdateForm(instance=request.user.profile)
+        profile_form = UserProfileUpdateForm(instance=request.user.userprofile)
         return render(
             request,
             self.template_name,
@@ -56,17 +56,33 @@ class CustomUserUpdateView(LoginRequiredMixin, View):
             request.POST, request.FILES, instance=request.user
         )
         profile_form = UserProfileUpdateForm(
-            request.POST, instance=request.user.profile
+            request.POST, instance=request.user.userprofile
         )
 
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
+
             messages.success(request, "프로필이 성공적으로 업데이트되었습니다.")
             return HttpResponseRedirect(self.get_success_url())
+        else:
+            self.form_invalid(user_form, profile_form)
 
         return render(
             request,
+            self.template_name,
+            {"user_form": user_form, "profile_form": profile_form},
+        )
+
+    def form_invalid(self, user_form, profile_form):
+        for form in [user_form, profile_form]:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(
+                        self.request, f"{form.fields[field].label or field}: {error}"
+                    )
+        return render(
+            self.request,
             self.template_name,
             {"user_form": user_form, "profile_form": profile_form},
         )
@@ -79,7 +95,6 @@ class CustomUserUpdateView(LoginRequiredMixin, View):
 
 class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
     template_name = "accounts/personal_info.html"
-    success_url = reverse_lazy("accounts:profile_edit")
 
     def form_invalid(self, form):
         for field, errors in form.errors.items():

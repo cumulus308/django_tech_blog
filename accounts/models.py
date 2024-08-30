@@ -2,7 +2,6 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
-# Create your models here.
 class CustomUser(AbstractUser):
     username = models.CharField(max_length=15, unique=True)
     email = models.EmailField(unique=True)
@@ -14,9 +13,7 @@ class CustomUser(AbstractUser):
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(
-        CustomUser, on_delete=models.CASCADE, related_name="profile"
-    )
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     hobbies = models.CharField(max_length=255, blank=True)
     specialties = models.CharField(max_length=255, blank=True)
     interests = models.CharField(max_length=255, blank=True)
