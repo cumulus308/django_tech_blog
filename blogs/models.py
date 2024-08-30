@@ -18,7 +18,6 @@ class Post(models.Model):
     writer = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     content = models.TextField()
     thumbnail = models.ImageField(upload_to="blog/files/%Y/%m/%d/", blank=True)
-    img_upload = models.ImageField(upload_to="blog/files/%Y/%m/%d/", blank=True)
     hit = models.IntegerField(default=0)
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, blank=True
@@ -71,3 +70,15 @@ class Bookmark(models.Model):
 
     class Meta:
         unique_together = ("user", "post")
+
+
+class Like(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "post")
+
+    def __str__(self):
+        return f"{self.user.username} likes {self.post.title}"
