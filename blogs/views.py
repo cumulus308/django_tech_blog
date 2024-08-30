@@ -1,10 +1,10 @@
-from django.http import HttpResponseForbidden, JsonResponse
+from django.http import HttpResponseForbidden, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-
+from django.contrib import messages
 from accounts.models import CustomUser, Follow
-from .models import Bookmark, Category, Post, Comment
+from .models import Bookmark, Category, Like, Post, Comment
 from django.db.models import Q
 from .forms import CommentForm, PostForm
 from django.views import View
@@ -53,6 +53,13 @@ class PostDetailView(View):
             else False
         )
 
+        # 좋아요 상태 확인
+        is_like = (
+            Like.objects.filter(user=request.user, post=post).exists()
+            if request.user.is_authenticated
+            else False
+        )
+
         context = {
             "post": post,
             "categories": Category.objects.all(),
@@ -61,6 +68,7 @@ class PostDetailView(View):
             "comment_form": CommentForm(),
             "is_bookmarked": is_bookmarked,
             "is_following": is_following,
+            "is_like": is_like,
         }
         return render(request, "blogs/post_detail.html", context)
 
@@ -243,6 +251,7 @@ class ToggleFollowView(View):
         follow_user = get_object_or_404(CustomUser, id=follow_user_id)
 
         if user == follow_user:
+            messages.error(request, "본인을 팔로우할 수 없습니다.")
             return redirect(request.META.get("HTTP_REFERER", "/"))
 
         follow, created = Follow.objects.get_or_create(
@@ -253,3 +262,27 @@ class ToggleFollowView(View):
             follow.delete()
 
         return redirect(request.META.get("HTTP_REFERER", "/"))
+
+
+class ToggleLikeView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        if not user.is_authenticated:
+            return HttpResponseForbidden()
+
+        post_id = kwargs.get("post_id")
+        post = get_object_or_404(Post, id=post_id)
+
+        if post.writer == request.user:
+            messages.error(request, "자신의 게시물에는 좋아요를 누를 수 없습니다.")
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
+
+        if not created:
+            like.delete()
+            messages.info(request, "좋아요가 취소되었습니다.")
+        else:
+            messages.success(request, "게시물을 좋아요했습니다.")
+
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))

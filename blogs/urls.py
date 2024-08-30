@@ -9,6 +9,7 @@ from .views import (
     CommentDeleteView,
     ToggleBookmarkView,
     ToggleFollowView,
+    ToggleLikeView,
 )
 
 app_name = "blogs"
@@ -29,6 +30,11 @@ urlpatterns = [
         "post/<int:post_id>/toggle-bookmark/",
         ToggleBookmarkView.as_view(),
         name="toggle_bookmark",
+    ),
+    path(
+        "post/<int:post_id>/toggle-like/",
+        ToggleLikeView.as_view(),
+        name="toggle_like",
     ),
     path(
         "user/<int:user_id>/toggle-follow/",

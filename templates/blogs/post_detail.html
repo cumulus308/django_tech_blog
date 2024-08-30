@@ -22,7 +22,7 @@
                                 <li class="breadcrumb-item">
                                     <form method="post" action="{% url 'blogs:toggle_bookmark' post.id %}">
                                         {% csrf_token %}
-                                        <button type="submit">
+                                        <button type="submit" class="btn btn-info btn-default btn-squared btn-transparent-info ">
                                             {% if is_bookmarked %}
                                                 Remove Bookmark
                                             {% else %}
@@ -31,14 +31,29 @@
                                         </button>
                                     </form>
                                 </li>
+                                <li class="breadcrumb-item">
+                                    <form method="post" action="{% url 'blogs:toggle_like' post.pk %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-warning btn-default btn-squared btn-transparent-warning ">
+                                            {% if is_bookmarked %}
+                                                {% translate "Remove Like" %}
+                                            {% else %}
+                                                {% translate "Add Like" %}
+                                            {% endif %}
+                                        </button>
+                                    </form>
+                                </li>
                                 {% if user.is_authenticated and user == post.writer %}
-                                    <li class="breadcrumb-item">
-                                        <a href="{% url 'blogs:post_update' post.pk %}">{% translate "Edit" %}</a>
-                                    </li>
+                                <li class="breadcrumb-item">
+                                    <a href="{% url 'blogs:post_update' post.pk %}" class="btn btn-primary btn-default btn-squared btn-transparent-primary">
+                                        {% translate "Edit" %}
+                                    </a>
+                                </li>
+
                                     <li class="breadcrumb-item">
                                         <form action="{% url 'blogs:post_delete' post.pk %}" method="post" style="display: inline;">
                                             {% csrf_token %}
-                                            <button type="submit" class="btn btn-link p-0" onclick="return confirm('Are you sure you want to delete this post?');">
+                                            <button type="submit" class="btn btn-danger btn-default btn-squared btn-transparent-danger" onclick="return confirm('Are you sure you want to delete this post?');">
                                                 {% translate "Delete" %}
                                             </button>
                                         </form>

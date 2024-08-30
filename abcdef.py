@@ -1,5 +1,9 @@
 import random
 
+# import os
+# import django
+
+
 # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 # django.setup()
 
@@ -39,7 +43,7 @@ categories = baker.make(
 print("category 생성 완료")
 post = baker.make(
     Post,
-    _quantity=500,
+    _quantity=200,
     title=seq("post_num_"),
     thumbnail="blog/files/2024/08/29/돌체_콜드브루_9R7vAmL.jpg",
     category=lambda: random.choice(categories),
