@@ -2,7 +2,6 @@ from django.db import models
 from accounts.models import CustomUser
 
 
-# Create your models here.
 class Category(models.Model):
     name = models.CharField(max_length=10, unique=True)
 

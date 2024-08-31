@@ -24,19 +24,16 @@ def combined_view(request):
         category_count: 전체 카테고리의 수
     }
     """
-    # 초기화
+
     searching_string = request.GET.get("q", "")
     posts = Post.objects.all().order_by("-created_at")
 
-    # 추가로 로드할 모델의 pk를 가져옵니다(db hit 없음)
     posts_writer_pk = posts.values_list("writer_id", flat=True).distinct()
     posts_category_pk = posts.values_list("category_id", flat=True).distinct()
 
-    # pk를 바탕으로 데이터를 불러옵니다(db hit 발생)
     writers = CustomUser.objects.filter(pk__in=posts_writer_pk)
     categories = Category.objects.filter(pk__in=posts_category_pk)
 
-    # 반환할 빈 리스트 생성
     highlighted_posts = []
     highlighted_writers = []
     highlighted_categories = []
@@ -67,19 +64,12 @@ def combined_view(request):
                 "highlighted_content": highlighted_content,
             }
         )
-        # [i if i==12 else "No" for i in v ]
-        [
-            split_string_via_match(writer.username, searching_string)
-            if searching_string
-            else None
-            for writer in writers[:4]
-        ]
 
     for writer in writers[:4]:
         highlighted_writer = (
             split_string_via_match(writer.username, searching_string)
-            # if searching_string
-            # else None
+            if searching_string
+            else None
         )
         highlighted_writers.append(
             {
@@ -101,12 +91,10 @@ def combined_view(request):
             }
         )
 
-    # 각 데이터를 카운팅
     post_count = posts.count()
     writer_count = writers.count()
     category_count = categories.count()
 
-    # 반환
     return render(
         request,
         "search/search_result.html",
@@ -221,7 +209,7 @@ class CategorySearchListView(ListView):
         if q:
             queryset = queryset.filter(name__icontains=q).distinct()
 
-        return queryset.values("pk", "name")  # 필요한 필드만 선택
+        return queryset.values("pk", "name")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

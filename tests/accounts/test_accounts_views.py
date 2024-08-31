@@ -8,9 +8,7 @@ CustomUser = get_user_model()
 
 class IndexViewTest(TestCase):
     def test_index_view(self):
-        response = self.client.get(
-            reverse("index")
-        )  # 'index'는 urls.py에서 설정한 이름이어야 합니다.
+        response = self.client.get(reverse("index"))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "layout/layouts.html")
 
@@ -31,7 +29,7 @@ class SignUpViewTest(TestCase):
             "password2": "strongpassword123",
         }
         response = self.client.post(reverse("accounts:signup"), data=form_data)
-        self.assertEqual(response.status_code, 302)  # 성공 시 리디렉션
+        self.assertEqual(response.status_code, 302)
         self.assertTrue(CustomUser.objects.filter(username="testuser").exists())
 
 
@@ -51,7 +49,7 @@ class CustomLoginViewTest(TestCase):
             reverse("accounts:login"),
             {"username": "testuser", "password": "password123"},
         )
-        self.assertEqual(response.status_code, 302)  # 로그인 성공 후 리디렉션
+        self.assertEqual(response.status_code, 302)
 
 
 CustomUser = get_user_model()
@@ -65,7 +63,6 @@ class CustomUserUpdateViewTest(TestCase):
             password="password123",
             nickname="testnickname",
         )
-        # Use get_or_create to avoid creating duplicate profiles
         self.profile, created = UserProfile.objects.get_or_create(
             user=self.user,
             defaults={
@@ -97,7 +94,7 @@ class CustomUserUpdateViewTest(TestCase):
             reverse("accounts:profile_edit", kwargs={"user_id": self.user.pk}),
             data=form_data,
         )
-        self.assertEqual(response.status_code, 302)  # 성공 시 리디렉션
+        self.assertEqual(response.status_code, 302)
         self.user.refresh_from_db()
         self.profile.refresh_from_db()
         self.assertEqual(self.user.email, "newemail@example.com")
@@ -127,6 +124,6 @@ class CustomPasswordChangeViewTest(TestCase):
             "new_password2": "newstrongpassword123",
         }
         response = self.client.post(reverse("accounts:password_change"), data=form_data)
-        self.assertEqual(response.status_code, 302)  # 성공 시 리디렉션
+        self.assertEqual(response.status_code, 302)
         self.user.refresh_from_db()
         self.assertTrue(self.user.check_password("newstrongpassword123"))

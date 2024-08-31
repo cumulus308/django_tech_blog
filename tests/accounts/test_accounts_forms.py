@@ -25,7 +25,6 @@ class CustomUserCreationFormTest(TestCase):
         self.assertTrue(user.check_password("strongpassword123"))
 
     def test_form_invalid_data(self):
-        # Passwords do not match
         form_data = {
             "username": "testuser",
             "nickname": "testnickname",
@@ -89,7 +88,6 @@ class UserProfileUpdateFormTest(TestCase):
             password="password123",
             nickname="testnickname",
         )
-        # Use get_or_create to avoid creating duplicate profiles
         self.profile, created = UserProfile.objects.get_or_create(
             user=self.user,
             defaults={

@@ -5,7 +5,6 @@ from django.conf import settings
 
 
 def load_banned_words():
-    # Pathlib을 사용하여 금지어 파일의 경로를 설정합니다.
     file_path = Path(settings.BASE_DIR) / "banned_words.txt"
 
     with open(file_path, "r", encoding="utf-8") as file:

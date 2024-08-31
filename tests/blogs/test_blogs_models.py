@@ -63,7 +63,7 @@ def test_post_ordering(self):
         created_at=timezone.now(),
     )
     posts = Post.objects.all()
-    self.assertEqual(posts.first(), post2)  # 가장 최근의 post2가 첫 번째로 나와야 함
+    self.assertEqual(posts.first(), post2)
     self.assertEqual(posts.last(), post1)
 
 
@@ -132,7 +132,7 @@ class BookmarkModelTest(TestCase):
 
     def test_bookmark_unique_together(self):
         Bookmark.objects.create(user=self.user, post=self.post)
-        with self.assertRaises(Exception):  # IntegrityError가 발생해야 함
+        with self.assertRaises(Exception):
             Bookmark.objects.create(user=self.user, post=self.post)
 
 
@@ -157,5 +157,5 @@ class LikeModelTest(TestCase):
 
     def test_like_unique_together(self):
         Like.objects.create(user=self.user, post=self.post)
-        with self.assertRaises(Exception):  # IntegrityError가 발생해야 함
+        with self.assertRaises(Exception):
             Like.objects.create(user=self.user, post=self.post)

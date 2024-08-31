@@ -19,7 +19,6 @@ from django.views import View
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 
 
-# Create your views here.
 class PostListView(ListView):
     model = Post
     template_name = "blogs/post_list.html"

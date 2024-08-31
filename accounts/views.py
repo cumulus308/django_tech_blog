@@ -15,7 +15,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 
 
-# Create your views here.
 def index(request):
     return render(request, "layout/layouts.html")
 
@@ -23,7 +22,7 @@ def index(request):
 class SignUpView(CreateView):
     form_class = CustomUserCreationForm
     template_name = "accounts/signup.html"
-    success_url = reverse_lazy("accounts:login")  # 회원가입 후 로그인 페이지로 리디렉션
+    success_url = reverse_lazy("accounts:login")
 
     def form_valid(self, form):
         user = form.save()
@@ -31,7 +30,6 @@ class SignUpView(CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        # 추가적인 로직을 통해 다른 URL로 리디렉션할 수 있습니다.
         return reverse_lazy("accounts:login")
 
 

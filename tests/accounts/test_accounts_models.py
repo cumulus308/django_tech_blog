@@ -32,7 +32,6 @@ class UserProfileModelTest(TestCase):
             password="password123",
             nickname="testnickname",
         )
-        # 기존 프로필이 존재하는 경우 생성하지 않고 가져오기
         self.profile, created = UserProfile.objects.get_or_create(
             user=self.user,
             defaults={
@@ -43,7 +42,6 @@ class UserProfileModelTest(TestCase):
             },
         )
 
-        # 프로필이 이미 존재했다면 필드를 업데이트
         if not created:
             self.profile.hobbies = "Reading"
             self.profile.specialties = "Programming"

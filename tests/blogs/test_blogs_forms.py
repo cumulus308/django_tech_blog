@@ -37,19 +37,18 @@ class PostModelTest(TestCase):
             writer=self.user,
             content="This is post 1.",
             category=self.category,
-            created_at=timezone.now() - datetime.timedelta(seconds=10),  # 10초 전
+            created_at=timezone.now() - datetime.timedelta(seconds=10),
         )
         post2 = Post.objects.create(
             title="Post 2",
             writer=self.user,
             content="This is post 2.",
             category=self.category,
-            created_at=timezone.now(),  # 현재 시간
+            created_at=timezone.now(),
         )
 
         posts = Post.objects.all()
 
-        # created_at에 따라 post2가 먼저 나와야 함
         self.assertEqual(posts.first(), post2)
         self.assertEqual(posts.last(), post1)
 
