@@ -152,3 +152,5 @@ INTERNAL_IPS = [
 
 
 AUTH_USER_MODEL = "accounts.CustomUser"
+
+TEST_DISCOVER_PATTERN = "tests/*/*[!_.py]"
