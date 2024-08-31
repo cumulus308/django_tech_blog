@@ -15,7 +15,19 @@
                     <h4 class="text-capitalize breadcrumb-title">블로그 글 모음</h4>
                     <div class="breadcrumb-action justify-content-center flex-wrap">
                         <nav aria-label="breadcrumb">
+                            <form method="get">
+                                <select name="order_by" onchange="updateUrl('order_by', this.value)">
+                                    <option value="-created_at" {% if current_order == '-created_at' %}selected{% endif %}>최신순</option>
+                                    <option value="-hit" {% if current_order == '-hit' %}selected{% endif %}>조회순</option>
+                                    <option value="-like_count" {% if current_order == '-like_count' %}selected{% endif %}>좋아요</option>
+                                </select>
 
+                                <select name="page-number" class="page-selection" onchange="updateUrl('per_page', this.value)">
+                                    <option value="12" {% if page_obj.paginator.per_page == 12 %}selected{% endif %}>12/page</option>
+                                    <option value="24" {% if page_obj.paginator.per_page == 24 %}selected{% endif %}>24/page</option>
+                                    <option value="48" {% if page_obj.paginator.per_page == 48 %}selected{% endif %}>48/page</option>
+                                </select>
+                            </form>
                         </nav>
                     </div>
                 </div>
@@ -112,16 +124,17 @@
                             {% endif %}
                         </ul>
                     </nav>
-                    <div class="paging-option">
-                        <select name="page-number" class="page-selection" onchange="window.location.href=this.value">
-                            <option value="?per_page=12{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" {% if page_obj.paginator.per_page == 12 %}selected{% endif %}>12/page</option>
-                            <option value="?per_page=24{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" {% if page_obj.paginator.per_page == 24 %}selected{% endif %}>24/page</option>
-                            <option value="?per_page=48{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" {% if page_obj.paginator.per_page == 48 %}selected{% endif %}>48/page</option>
-                        </select>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    function updateUrl(paramName, paramValue) {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set(paramName, paramValue);
+        window.location.search = urlParams.toString();
+    }
+</script>
 {% endblock %}

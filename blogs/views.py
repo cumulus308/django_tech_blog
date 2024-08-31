@@ -28,12 +28,18 @@ class PostListView(ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         q = self.request.GET.get("q", "")
+        order_by = self.request.GET.get("order_by", "-created_at")
         if q:
             queryset = queryset.filter(
                 Q(title__icontains=q) | Q(content__icontains=q)
             ).distinct()
 
-        queryset = queryset.order_by("-created_at")
+        valid_order_fields = ["-created_at", "-hit", "-like_count"]
+        if order_by in valid_order_fields:
+            queryset = queryset.order_by(order_by)
+        else:
+            queryset = queryset.order_by("-created_at")
+
         return queryset
 
     def get_paginate_by(self, queryset):
@@ -45,6 +51,7 @@ class PostListView(ListView):
         paginator = context["paginator"]
         page = context["page_obj"]
         context["is_paginated"] = page.has_other_pages()
+        context["current_order"] = self.request.GET.get("order_by", "-created_at")
 
         # 페이지 범위 계산
         if paginator.num_pages <= 9:
