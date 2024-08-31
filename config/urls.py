@@ -1,13 +1,12 @@
 from django.conf import settings
 from django.conf.urls.static import static
-
 from django.contrib import admin
 from django.urls import path, include
-from accounts.views import index
-
 
 from django.http import HttpResponseNotFound
 from django.shortcuts import render
+
+from accounts.views import index
 
 
 def test_404_viw(request):

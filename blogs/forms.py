@@ -1,7 +1,9 @@
-from django import forms
-from .models import Post, Comment
 from pathlib import Path
+
+from django import forms
 from django.conf import settings
+
+from .models import Post, Comment
 
 
 def load_banned_words():

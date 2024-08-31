@@ -1,11 +1,12 @@
 from django.urls import path
+
 from .views import (
-    combined_view,
-    TitleContentSearchListView,
-    WriterSearchListView,
-    CategorySearchListView,
     CategorySearchDetailListView,
+    CategorySearchListView,
+    TitleContentSearchListView,
     WriterSearchDetailListView,
+    WriterSearchListView,
+    combined_view,
 )
 
 app_name = "search"

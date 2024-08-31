@@ -1,7 +1,11 @@
 import json
+
 from django.http import HttpResponseForbidden, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
+from django.contrib import messages
+from django.db.models import Q, F
+from django.views import View
 from django.views.generic import (
     ListView,
     CreateView,
@@ -9,17 +13,22 @@ from django.views.generic import (
     DeleteView,
     DetailView,
 )
-from django.contrib import messages
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
+
 from accounts.models import CustomUser, Follow
 from .models import Bookmark, Category, Like, Post, Comment
-from django.db.models import Q
-from django.db.models import F
 from .forms import CommentForm, PostForm
-from django.views import View
-from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 
 
 class PostListView(ListView):
+    """
+    Post를 정렬
+
+    get_queryset : q, order_by의 내용을 가져와서 필터링
+    get_paginate_by : 페이지당 몇 개의 Post를 보여줄지 결정, per_page 내용을 가져옴
+    get_context_data : is_paginated, current_order, page_range 반환
+    """
+
     model = Post
     template_name = "blogs/post_list.html"
     context_object_name = "posts"
@@ -52,7 +61,6 @@ class PostListView(ListView):
         context["is_paginated"] = page.has_other_pages()
         context["current_order"] = self.request.GET.get("order_by", "-created_at")
 
-        # 페이지 범위 계산
         if paginator.num_pages <= 9:
             context["page_range"] = range(1, paginator.num_pages + 1)
         else:
@@ -64,6 +72,14 @@ class PostListView(ListView):
 
 
 class PostDetailView(LoginRequiredMixin, DetailView):
+    """
+    Post 세부 내용 확인
+
+    get_object : 조회수 증가
+    get_context_data : comments, is_bookmarked, is_following, is_liked 반환
+    post : 댓글 등록
+    """
+
     model = Post
     template_name = "blogs/post_detail.html"
     context_object_name = "post"
@@ -79,21 +95,17 @@ class PostDetailView(LoginRequiredMixin, DetailView):
         post = self.object
         user = self.request.user
 
-        # 댓글과 대댓글
         comments = Comment.objects.filter(post=post, parent=None)
         context["comments"] = comments
 
-        # 북마크 상태
         context["is_bookmarked"] = Bookmark.objects.filter(
             user=user, post=post
         ).exists()
 
-        # 팔로우 상태
         context["is_following"] = Follow.objects.filter(
             follower=user, following=post.writer
         ).exists()
 
-        # 좋아요 상태
         context["is_liked"] = Like.objects.filter(user=user, post=post).exists()
 
         return context
@@ -106,7 +118,6 @@ class PostDetailView(LoginRequiredMixin, DetailView):
             comment.post = post
             comment.writer = request.user
 
-            # parent_id가 제공된 경우 (대댓글인 경우)
             parent_id = request.POST.get("parent")
             if parent_id:
                 parent_comment = get_object_or_404(Comment, id=parent_id)
@@ -117,6 +128,15 @@ class PostDetailView(LoginRequiredMixin, DetailView):
 
 
 class PostCreateView(LoginRequiredMixin, CreateView):
+    """
+    Post 생성
+
+    form_valid : 유효성 검사 성공
+    form_invalid : 유효성 검사 실패시 에러 메시지 반환
+    get_success_url : 게시물 생성 성공 시 연결될 페이지
+    get_context_data :
+    """
+
     model = Post
     form_class = PostForm
     template_name = "blogs/post_form.html"
@@ -142,6 +162,19 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    """
+    Post를 수정
+
+    메서드:
+        test_func: 게시글의 작성자만 수정할 수 있도록 권한 체크
+        handle_no_permission: 사용자가 권한이 없을 때 403을 반환
+        get_object: post, categories 반환
+        get_context_data:
+        form_valid: 유효한 폼 제출 처리
+        form_invalid: 유효하지 않은 폼을 제출 처리
+        get_success_url: 수정된 게시글의 상세 페이지로 리다이렉트
+    """
+
     model = Post
     form_class = PostForm
     template_name = "blogs/post_form.html"
@@ -151,20 +184,17 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return self.request.user == post.writer
 
     def handle_no_permission(self):
-        return HttpResponseForbidden("You do not have permission to edit this post.")
+        return HttpResponseForbidden("접근 권한이 없습니다.")
 
-    def get_success_url(self):
-        return reverse_lazy("blogs:post_detail", kwargs={"pk": self.object.pk})
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset=queryset)
+        return obj
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["post"] = self.get_object()
         context["categories"] = Category.objects.all()
         return context
-
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset=queryset)
-        return obj
 
     def form_valid(self, form):
         return super().form_valid(form)
@@ -173,6 +203,9 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         context = self.get_context_data(form=form)
         context["errors"] = form.errors
         return self.render_to_response(context)
+
+    def get_success_url(self):
+        return reverse_lazy("blogs:post_detail", kwargs={"pk": self.object.pk})
 
 
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):

@@ -1,4 +1,5 @@
 from django.urls import path
+
 from .views import (
     BookmarkedPostsView,
     PostListView,
@@ -12,6 +13,7 @@ from .views import (
     ToggleFollowView,
     ToggleLikeView,
 )
+
 
 app_name = "blogs"
 

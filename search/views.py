@@ -1,8 +1,10 @@
-from django.shortcuts import render
 from django.db.models import Q
-from blogs.models import Category, Post
+from django.shortcuts import render
 from django.views.generic import ListView
+
+from blogs.models import Category, Post
 from accounts.models import CustomUser
+
 from utils import split_string_via_match
 
 
