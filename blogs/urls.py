@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import (
+    BookmarkedPostsView,
     PostListView,
     PostDetailView,
     PostUpdateView,
@@ -41,4 +42,5 @@ urlpatterns = [
         ToggleFollowView.as_view(),
         name="toggle_follow",
     ),
+    path("bookmarks/", BookmarkedPostsView.as_view(), name="bookmarked_posts"),
 ]

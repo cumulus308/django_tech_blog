@@ -138,51 +138,64 @@
                     <div class="card-body">
                         <div class="comment-list">
                             <div class="comment-list__title">
-                                <form method="post">
+                                <form method="post" action="{% url 'blogs:post_detail' post.pk %}">
                                     {% csrf_token %}
                                     <div class="mb-3 d-flex align-items-center ">
                                         <textarea class="form-control form-control-lg" name="content" rows="2" placeholder="Write your comment here..." style="resize:none;"></textarea>
                                         <button type="submit" class="btn btn-primary ms-2">Submit</button>
                                     </div>
-
                                 </form>
-
                             </div>
                             <ul class="comment-list__content">
-                                {% for comment in parent_comment %}
+                                {% for comment in comments %}
                                     <li class="mb-20">
                                         <div class="dm-comment-box media">
                                             <div class="dm-comment-box__author">
                                                 <figure>
-                                                    <img src="{% static 'img/author/1.jpg' %}" class="bg-opacity-primary d-flex" alt="Admin Autor">
+                                                    <img src="{% static 'img/author/1.jpg' %}" class="bg-opacity-primary d-flex" alt="User Avatar">
                                                 </figure>
                                             </div>
                                             <div class="dm-comment-box__content media-body" id="comment-{{ comment.id }}">
                                                 <div class="comment-content-inner cci">
                                                     <span class="cci__author-info">{{ comment.writer }}</span>
-                                                    <p class="cci__comment-text comment-content"> {{ comment.content }} </p>
+                                                    <p class="cci__comment-text comment-content" id="comment-text-{{ comment.id }}">{{ comment.content }}</p>
+                                                    <textarea class="form-control" id="edit-textarea-{{ comment.id }}" style="display: none;">{{ comment.content }}</textarea>
                                                     <div class="cci__comment-actions">
-                                                        <a href="#" class="btn-reply reply-comment" data-comment-id="{{ comment.id }}">
-                                                            <span>Reply</span>
-                                                        </a>
-                                                        {% if user.is_authenticated and user == comment.writer %}
-                                                        <a href="#" class="btn-reply edit-comment ms-1" data-comment-id="{{ comment.id }}">
-                                                            <span>Edit</span>
-                                                        </a>
-                                                        <form action="{% url 'blogs:comment_delete' comment.pk %}" method="post" style="display: inline;">
+                                                        <form method="post" action="{% url 'blogs:post_detail' post.pk %}">
                                                             {% csrf_token %}
-                                                            <button type="submit" class="btn-reply ms-1" style="background: none; border: none; color: inherit; font: inherit; padding: 0; cursor: pointer;">
-                                                                <span>Delete</span>
-                                                            </button>
+                                                            <textarea name="content" rows="2"></textarea>
+                                                            <input type="hidden" name="parent" value="{{ comment.id }}">
+                                                            <button type="submit">Reply</button>
                                                         </form>
+                                                        {% if user.is_authenticated and user == comment.writer %}
+                                                            <button class="btn-reply edit-comment ms-1" data-comment-id="{{ comment.id }}">Edit</button>
+                                                            <button class="btn-reply submit-edit ms-1" data-comment-id="{{ comment.id }}" style="display: none;">Submit</button>
+                                                            <form action="{% url 'blogs:comment_delete' comment.pk %}" method="post" style="display: inline;">
+                                                                {% csrf_token %}
+                                                                <button type="submit" class="btn-reply ms-1" style="background: none; border: none; color: inherit; font: inherit; padding: 0; cursor: pointer;">
+                                                                    <span>Delete</span>
+                                                                </button>
+                                                            </form>
                                                         {% endif %}
+
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <!-- Replies -->
+                                        <!-- 대댓글 작성 폼 (초기에는 숨김) -->
+                                        <div class="reply-comment" id="reply-form-{{ comment.id }}" style="display: none;">
+                                            <form method="post" action="{% url 'blogs:post_detail' post.pk %}">
+                                                {% csrf_token %}
+                                                <div class="mb-3">
+                                                    <textarea class="form-control" name="content" rows="2" placeholder="Write your reply here..." style="resize:none;"></textarea>
+                                                </div>
+                                                <input type="hidden" name="parent" value="{{ comment.id }}">
+                                                <button type="submit" class="btn btn-secondary">Add reply</button>
+                                            </form>
+                                        </div>
+                                        <!-- 대댓글 목록 -->
                                         <ul class="replies-list">
-                                            {% for reply in comment.children %}
+                                            {% for reply in comment.replies.all %}
                                                 <li class="mb-20 ml-40">
                                                     <div class="dm-comment-box media">
                                                         <div class="dm-comment-box__content media-body" id="comment-{{ reply.id }}">
@@ -191,9 +204,6 @@
                                                                 <p class="cci__comment-text comment-content"> {{ reply.content }} </p>
                                                                 <div class="cci__comment-actions">
                                                                     {% if user.is_authenticated and user == reply.writer %}
-                                                                    <a href="#" class="btn-reply edit-comment ms-1" data-comment-id="{{ reply.id }}">
-                                                                        <span>Edit</span>
-                                                                    </a>
                                                                     <form action="{% url 'blogs:comment_delete' reply.pk %}" method="post" style="display: inline;">
                                                                         {% csrf_token %}
                                                                         <button type="submit" class="btn-reply ms-1" style="background: none; border: none; color: inherit; font: inherit; padding: 0; cursor: pointer;">
@@ -210,7 +220,7 @@
                                         </ul>
                                     </li>
                                 {% empty %}
-                                    <p> No comments yet! </p><br>
+                                    <p>No comments yet!</p><br>
                                 {% endfor %}
                             </ul>
                         </div>
@@ -235,117 +245,63 @@
 
 {% block extra_js %}
 <script>
-    $(document).ready(function() {  // (1) 문서가 준비되면 실행되는 코드
-        // CSRF 토큰 설정
-        function getCookie(name) {  // (2) 쿠키에서 CSRF 토큰을 가져오는 함수
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
+    document.addEventListener('DOMContentLoaded', function() {
+        // 댓글 수정 기능
+        document.querySelectorAll('.edit-comment').forEach(function(button) {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                const commentId = this.getAttribute('data-comment-id');
+                const commentText = document.getElementById(`comment-text-${commentId}`);
+                const editTextarea = document.getElementById(`edit-textarea-${commentId}`);
+                const submitButton = this.nextElementSibling; // submit-edit 버튼 찾기
+
+                // 댓글 텍스트를 숨기고 textarea를 보이게 설정
+                commentText.style.display = 'none';
+                editTextarea.style.display = 'block';
+                this.style.display = 'none'; // Edit 버튼 숨기기
+                submitButton.style.display = 'inline-block'; // Submit 버튼 보이기
+            });
+        });
+
+        document.querySelectorAll('.submit-edit').forEach(function(button) {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                const commentId = this.getAttribute('data-comment-id');
+                const editTextarea = document.getElementById(`edit-textarea-${commentId}`);
+                const content = editTextarea.value;
+
+                // CSRF 토큰 가져오기
+                const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+                // AJAX를 사용하여 수정된 댓글을 서버로 전송
+                fetch(`/blogs/comment/${commentId}/update/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken  // CSRF 토큰 추가
+                    },
+                    body: JSON.stringify({
+                        content: content
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const commentText = document.getElementById(`comment-text-${commentId}`);
+                        commentText.innerHTML = data.content;
+                        commentText.style.display = 'block';
+                        editTextarea.style.display = 'none';
+                        this.style.display = 'none'; // Submit 버튼 숨기기
+                        this.previousElementSibling.style.display = 'inline-block'; // Edit 버튼 보이기
+                    } else {
+                        console.error(data.error);
                     }
-                }
-            }
-            return cookieValue;
-        }
-        const csrftoken = getCookie('csrftoken');  // (3) CSRF 토큰을 가져와 변수에 저장
-
-        // 댓글 수정
-        $('.edit-comment').click(function(e) {  // (4) .edit-comment 버튼 클릭 이벤트 핸들러
-            e.preventDefault();
-            var commentId = $(this).data('comment-id');  // (5) 댓글 ID를 가져옴
-            var commentDiv = $('#comment-' + commentId);  // (6) 해당 댓글을 찾음
-            var contentP = commentDiv.find('.comment-content');  // (7) 댓글 내용 요소를 찾음
-            var content = contentP.text().trim();  // (8) 댓글 내용을 가져옴
-
-            var form = $('<form>')  // (9) 댓글 수정 폼을 동적으로 생성
-                .append($('<textarea>').addClass('form-control mb-2').val(content))
-                .append($('<button>').addClass('btn btn-primary btn-sm mr-2').text('Save').click(function(e) {
-                    e.preventDefault();
-                    var newContent = $(this).siblings('textarea').val();  // (10) 수정된 내용을 가져옴
-
-                    $.ajax({
-                        url: '{% url "blogs:comment_update" 999999 %}'.replace('999999', commentId),  // (11) Ajax로 댓글 수정 요청을 보냄
-                        method: 'POST',
-                        data: {
-                            'content': newContent,
-                        },
-                        headers: {'X-CSRFToken': csrftoken},  // (12) CSRF 토큰을 헤더에 추가
-                        success: function(response) {  // (13) 성공 시, 댓글 내용을 갱신
-                            contentP.text(response.content);
-                            form.replaceWith(contentP);
-                        },
-                        error: function(xhr) {  // (14) 오류 발생 시, 경고 메시지 표시
-                            alert(xhr.responseJSON.error || 'An error occurred while updating the comment.');
-                        }
-                    });
-                }))
-                .append($('<button>').addClass('btn btn-secondary btn-sm').text('Cancel').click(function(e) {  // (15) 취소 버튼을 추가
-                    e.preventDefault();
-                    form.replaceWith(contentP);  // (16) 폼을 댓글 내용으로 교체
-                }));
-
-            contentP.replaceWith(form);  // (17) 댓글 내용을 폼으로 교체
+                })
+                .catch(error => console.error('Error:', error));
+            });
         });
-
-        // 대댓글 작성
-        $(document).on('click', '.reply-comment', function(e) {  // (18) .reply-comment 버튼 클릭 이벤트 핸들러 (이벤트 위임 사용)
-            e.preventDefault();
-            console.log("Reply button clicked!");
-            var commentId = $(this).closest('.dm-comment-box__content').attr('id').split('-')[1];  // (19) 댓글 ID를 가져옴
-            console.log("Comment ID: ", commentId);
-            var existingForm = $('#reply-form-' + commentId);  // (20) 이미 존재하는 대댓글 폼이 있는지 확인
-            console.log("Existing form: ", existingForm);
-
-            if (existingForm.length) {  // (21) 대댓글 폼이 있으면 토글로 보여줌/숨김
-                existingForm.remove();
-            }
-
-            var replyForm = $('<form>')  // (22) 대댓글 작성 폼을 동적으로 생성
-                .attr('id', 'reply-form-' + commentId)
-                .addClass('reply-form mt-2')
-                .append($('<textarea>').addClass('form-control mb-2').attr('placeholder', 'Write your reply...'))
-                .append($('<button>').addClass('btn btn-primary btn-sm mr-2').text('Submit').click(function(e) {
-                    e.preventDefault();
-                    var content = $(this).siblings('textarea').val();  // (23) 대댓글 내용을 가져옴
-                    $.ajax({
-                        url: '{% url "blogs:post_detail" post.pk %}',  // (24) Ajax로 대댓글 작성 요청을 보냄
-                        method: 'POST',
-                        data: {
-                            'content': content,
-                            'parent': commentId,  // (25) 부모 댓글 ID를 함께 전송
-                        },
-                        headers: {'X-CSRFToken': csrftoken},  // (26) CSRF 토큰을 헤더에 추가
-                        success: function(response) {  // (27) 성공 시, 대댓글을 화면에 추가
-                            // 페이지 새로고침
-                            location.reload();  // 대댓글 작성 후 페이지를 새로고침
-                        },
-                        error: function(xhr) {  // (28) 오류 발생 시, 경고 메시지 표시
-                            var errorMessage = "An error occurred while submitting the reply.";
-
-                            if (xhr.responseJSON && xhr.responseJSON.error) {
-                                errorMessage = xhr.responseJSON.error;
-                            } else {
-                                console.error("Error response:", xhr.responseText);  // 원래 서버 응답 확인
-                            }
-
-                            alert(errorMessage);  // 사용자에게 에러 메시지 표시
-                        }
-                    });
-
-                }))
-                .append($('<button>').addClass('btn btn-secondary btn-sm').text('Cancel').click(function(e) {  // (29) 취소 버튼을 추가
-                    e.preventDefault();
-                    replyForm.remove();  // (30) 폼을 제거
-                }));
-
-            $(this).after(replyForm);  // (31) 대댓글 폼을 버튼 아래에 추가
-        });
-
     });
-
 </script>
+
+
 {% endblock  %}

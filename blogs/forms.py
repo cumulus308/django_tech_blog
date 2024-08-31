@@ -50,9 +50,11 @@ class PostForm(forms.ModelForm):
 
 
 class CommentForm(forms.ModelForm):
+    parent = forms.IntegerField(widget=forms.HiddenInput, required=False)
+
     class Meta:
         model = Comment
-        fields = ["content", "parent"]
+        fields = ["content"]
         labels = {
             "content": (""),
         }

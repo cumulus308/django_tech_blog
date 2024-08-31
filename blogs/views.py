@@ -1,11 +1,19 @@
+import json
 from django.http import HttpResponseForbidden, HttpResponseRedirect, JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import (
+    ListView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+    DetailView,
+)
 from django.contrib import messages
 from accounts.models import CustomUser, Follow
 from .models import Bookmark, Category, Like, Post, Comment
 from django.db.models import Q
+from django.db.models import F
 from .forms import CommentForm, PostForm
 from django.views import View
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
@@ -49,85 +57,57 @@ class PostListView(ListView):
         return context
 
 
-class PostDetailView(View):
+class PostDetailView(LoginRequiredMixin, DetailView):
+    model = Post
+    template_name = "blogs/post_detail.html"
+    context_object_name = "post"
+
     def get_object(self):
-        pk = self.kwargs.get("pk")
-        return get_object_or_404(Post, pk=pk)
+        obj = super().get_object()
+        if self.request.user != obj.writer:
+            Post.objects.filter(pk=obj.pk).update(hit=F("hit") + 1)
+        return obj
 
-    def get(self, request, pk):
-        post = self.get_object()
-        post.hit += 1
-        post.save()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        post = self.object
+        user = self.request.user
 
-        # 북마크 상태 확인
-        is_bookmarked = (
-            Bookmark.objects.filter(user=request.user, post=post).exists()
-            if request.user.is_authenticated
-            else False
-        )
+        # 댓글과 대댓글
+        comments = Comment.objects.filter(post=post, parent=None)
+        context["comments"] = comments
 
-        # 팔로우 상태 확인
-        is_following = (
-            Follow.objects.filter(follower=request.user, following=post.writer).exists()
-            if request.user.is_authenticated
-            else False
-        )
+        # 북마크 상태
+        context["is_bookmarked"] = Bookmark.objects.filter(
+            user=user, post=post
+        ).exists()
 
-        # 좋아요 상태 확인
-        is_liked = (
-            Like.objects.filter(user=request.user, post=post).exists()
-            if request.user.is_authenticated
-            else False
-        )
+        # 팔로우 상태
+        context["is_following"] = Follow.objects.filter(
+            follower=user, following=post.writer
+        ).exists()
 
-        context = {
-            "post": post,
-            "categories": Category.objects.all(),
-            "comments": post.comments.all().order_by("created_at"),
-            "parent_comment": post.comments.filter(parent=None),
-            "comment_form": CommentForm(),
-            "is_bookmarked": is_bookmarked,
-            "is_following": is_following,
-            "is_liked": is_liked,
-        }
-        return render(request, "blogs/post_detail.html", context)
+        # 좋아요 상태
+        context["is_liked"] = Like.objects.filter(user=user, post=post).exists()
+
+        return context
 
     def post(self, request, *args, **kwargs):
-        post = self.get_object()
-
-        if not request.user.is_authenticated:
-            return redirect("accounts:login")
-
+        post = get_object_or_404(Post, pk=self.kwargs["pk"])
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
-            comment.writer = request.user
             comment.post = post
+            comment.writer = request.user
 
-            parent_id = form.cleaned_data.get("parent")
-            if parent_id and isinstance(parent_id, Comment):
-                parent = parent_id
-                parent_id = parent.id
-
+            # parent_id가 제공된 경우 (대댓글인 경우)
+            parent_id = request.POST.get("parent")
             if parent_id:
-                try:
-                    parent = Comment.objects.get(id=parent_id)
-                    if parent.is_parent:
-                        comment.parent = parent
-                except Comment.DoesNotExist:
-                    return JsonResponse(
-                        {"error": "Parent comment does not exist."}, status=400
-                    )
+                parent_comment = get_object_or_404(Comment, id=parent_id)
+                comment.parent = parent_comment
 
             comment.save()
-
-        context = {
-            "post": post,
-            "categories": Category.objects.all(),
-            "comments": post.comments.all().order_by("created_at"),
-            "comment_form": form,
-        }
-        return render(request, "blogs/post_detail.html", context)
+        return redirect("blogs:post_detail", pk=post.pk)
 
 
 class PostCreateView(LoginRequiredMixin, CreateView):
@@ -215,11 +195,17 @@ class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, View):
         return self.request.user == comment.writer
 
     def post(self, request, *args, **kwargs):
-        comment = Comment.objects.get(pk=self.kwargs["pk"])
-        content = request.POST.get("content")
-        comment.content = content
-        comment.save()
-        return JsonResponse({"content": comment.content})
+        try:
+            data = json.loads(request.body)
+            content = data.get("content")
+            comment = Comment.objects.get(pk=self.kwargs["pk"])
+            comment.content = content
+            comment.save()
+            return JsonResponse({"success": True, "content": comment.content})
+        except json.JSONDecodeError:
+            return JsonResponse(
+                {"success": False, "error": "Invalid JSON data"}, status=400
+            )
 
     def handle_no_permission(self):
         return JsonResponse(
@@ -306,3 +292,12 @@ class ToggleLikeView(LoginRequiredMixin, View):
             messages.success(request, "게시물을 좋아요했습니다.")
 
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+class BookmarkedPostsView(LoginRequiredMixin, ListView):
+    model = Bookmark
+    template_name = "blogs/bookmarked_posts.html"
+    context_object_name = "bookmarks"
+
+    def get_queryset(self):
+        return Bookmark.objects.filter(user=self.request.user).select_related("post")
