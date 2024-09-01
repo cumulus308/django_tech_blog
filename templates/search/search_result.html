@@ -83,7 +83,7 @@
                     <div class="search-content bg-white radius-xl d-flex mb-50">
                         <div class="card  border-0 px-sm-30 px-20 w-100">
                             <div class="card-header flex-1 d-flex align-items-center flex-wrap justify-content-between border-bottom-0 px-0">
-                                <p class="keyword-searching text-dark py-10"> 글쓴이 ( {{ writer_count }} <span class="color-light fw-400">results found
+                                <p class="keyword-searching text-dark py-10"> 게시글을 작성한 유저 ( {{ writer_count }} <span class="color-light fw-400">results found
                                         for</span> “{{ q }}” )</p>
                                 <p class="mb-0 fs-14 color-light fw-400"><a href="{% url 'search:writer_result' %}?q={{ q }}"> 모두 보기 </a></p>
                             </div>
@@ -94,7 +94,7 @@
                                     <div class="mb-30">
                                         <a href="{% url "search:writer_detail_result"  item.writer.pk%}">
                                             <h6 class="fw-500">
-                                                {% if item %}
+                                                {% if item.highlighted_writer %}
                                                     {{ item.highlighted_writer.start|striptags }}<span class="color-primary">{{ item.highlighted_writer.match|striptags }}</span>{{ item.highlighted_writer.end|striptags }}
                                                 {% else %}
                                                     {{ item.writer}}

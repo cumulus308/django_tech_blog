@@ -5,7 +5,7 @@ from django.views.generic import ListView
 from blogs.models import Category, Post
 from accounts.models import CustomUser
 
-from utils import split_string_via_match
+from tools.utils import split_string_via_match
 
 
 def combined_view(request):
@@ -161,6 +161,7 @@ class TitleContentSearchListView(ListView):
 class WriterSearchListView(ListView):
     """
     작성자 이름에 검색어가 포함된 게시물을 출력하는 뷰
+
     """
 
     model = CustomUser
@@ -168,6 +169,9 @@ class WriterSearchListView(ListView):
     context_object_name = "writers"
 
     def get_queryset(self):
+        """
+        검색어(q)를 기준으로 작성자 목록을 필터링하고 정렬하여 반환
+        """
         q = self.request.GET.get("q", "")
         queryset = super().get_queryset().order_by("-date_joined")
 
@@ -177,34 +181,39 @@ class WriterSearchListView(ListView):
         return queryset.values("pk", "username")
 
     def get_context_data(self, **kwargs):
+        """
+        템플릿에 전달할 추가적인 컨텍스트 데이터를 설정
+        """
         context = super().get_context_data(**kwargs)
         q = self.request.GET.get("q", "")
         writers = context["writers"]
 
-        highlighted_writers = []
-        for writer in writers:
-            highlighted_writer = split_string_via_match(writer["username"], q)
-
-            highlighted_writers.append(
-                {
-                    "writer_pk": writer["pk"],
-                    "writer_username": writer["username"],
-                    "highlighted_writer": highlighted_writer,
-                }
-            )
-
-        context["highlighted_writers"] = highlighted_writers
+        context["highlighted_writers"] = [
+            {
+                "writer_pk": writer["pk"],
+                "writer_username": writer["username"],
+                "highlighted_writer": split_string_via_match(writer["username"], q),
+            }
+            for writer in writers
+        ]
         context["q"] = q
         context["writer_count"] = len(writers)
         return context
 
 
 class CategorySearchListView(ListView):
+    """
+    카테고리 이름에 검색어가 포함된 항목들을 출력하는 뷰
+    """
+
     model = Category
     template_name = "search/search_category_result.html"
     context_object_name = "categories"
 
     def get_queryset(self):
+        """
+        검색어(q)를 기준으로 카테고리 목록을 필터링하고 정렬하여 반환
+        """
         q = self.request.GET.get("q", "")
         queryset = super().get_queryset().order_by("-created_at")
 
@@ -214,49 +223,66 @@ class CategorySearchListView(ListView):
         return queryset.values("pk", "name")
 
     def get_context_data(self, **kwargs):
+        """
+        템플릿에 전달할 추가적인 컨텍스트 데이터를 설정
+
+        카테고리 목록을 필터링하고, 검색어와 하이라이트된 카테고리 이름을 포함하여
+        템플릿에 전달할 컨텍스트 데이터를 설정
+        """
         context = super().get_context_data(**kwargs)
         q = self.request.GET.get("q", "")
         categories = context["categories"]
 
-        highlighted_categories = []
-        for category in categories:
-            highlighted_category = split_string_via_match(category["name"], q)
-
-            highlighted_categories.append(
-                {
-                    "category_pk": category["pk"],
-                    "category_name": category["name"],
-                    "highlighted_category": highlighted_category,
-                }
-            )
-
-        context["highlighted_categories"] = highlighted_categories
+        context["highlighted_categories"] = [
+            {
+                "category_pk": category["pk"],
+                "category_name": category["name"],
+                "highlighted_category": split_string_via_match(category["name"], q),
+            }
+            for category in categories
+        ]
         context["q"] = q
         context["category_count"] = len(categories)
         return context
 
 
 class CategorySearchDetailListView(ListView):
+    """
+    특정 카테고리에 속하는 게시물들을 출력하는 뷰
+    """
+
     model = Post
     template_name = "search/search_category_detail_result.html"
     context_object_name = "posts"
 
     def get_queryset(self):
-        category_pk = self.kwargs.get("category_pk")
-        queryset = super().get_queryset().filter(category_id=category_pk)
+        """
+        특정 카테고리에 속하는 게시물들을 필터링하여 반환
 
-        print(queryset)
-        return queryset
+        URL 매개변수에서 카테고리의 기본 키(category_pk)를 가져와,
+        해당 카테고리에 속하는 게시물들을 필터링하여 반환
+        """
+        category_pk = self.kwargs.get("category_pk")
+        return super().get_queryset().filter(category_id=category_pk)
 
 
 class WriterSearchDetailListView(ListView):
+    """
+    특정 작성자가 작성한 게시물들을 출력하는 뷰.
+
+    이 뷰는 사용자가 선택한 특정 작성자가 작성한 게시물 목록을 보여줍니다.
+    """
+
     model = Post
     template_name = "search/search_writer_detail_result.html"
     context_object_name = "posts"
 
     def get_queryset(self):
-        writer_pk = self.kwargs.get("writer_pk")
-        queryset = super().get_queryset().filter(writer_id=writer_pk)
+        """
+        특정 작성자가 작성한 게시물들을 필터링하여 반환합니다.
 
-        print(queryset)
-        return queryset
+        URL 매개변수에서 작성자의 기본 키(writer_pk)를 가져와,
+        해당 작성자가 작성한 게시물들을 필터링하여 반환합니다.
+        """
+        writer_pk = self.kwargs.get("writer_pk")
+        return super().get_queryset().filter(writer_id=writer_pk)

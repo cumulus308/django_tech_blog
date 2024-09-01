@@ -36,9 +36,6 @@ class PostListView(ListView):
     def get_queryset(self):
         """
         q와 order_by 파라미터를 기반으로 쿼리셋을 필터링
-
-        Returns:
-            QuerySet: 필터링되고 정렬된 Post 객체의 쿼리셋
         """
         queryset = super().get_queryset()
         q = self.request.GET.get("q", "")
@@ -60,9 +57,6 @@ class PostListView(ListView):
         """
         페이지당 표시할 Post의 수를 결정
 
-        Args:
-            queryset (QuerySet): 필터링된 쿼리셋
-
         Returns:
             한 페이지에 표시할 Post의 개수
         """
@@ -71,9 +65,6 @@ class PostListView(ListView):
     def get_context_data(self, **kwargs):
         """
         템플릿에서 사용할 추가 컨텍스트 데이터를 제공
-
-        Args:
-            **kwargs: 추가적인 키워드 인수
 
         Returns:
             템플릿에서 사용할 컨텍스트 데이터(is_paginated, current_order, page_range)
@@ -202,7 +193,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     """
-    사용자가 기존 Post를 수정할 수 있는 뷰.
+    사용자가 기존 Post를 수정할 수 있는 뷰
     """
 
     model = Post
@@ -276,7 +267,7 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, View):
     """
-    사용자가 자신의 댓글을 수정할 수 있는 뷰.
+    사용자가 자신의 댓글을 수정할 수 있는 뷰
     """
 
     def test_func(self):
@@ -356,8 +347,8 @@ class ToggleBookmarkView(View):
         이미 북마크한 상태라면 해당 북마크를 삭제
 
         Returns:
-            HttpResponseRedirect: 사용자가 북마크 동작 후 이전 페이지로 리디렉션되는 응답 객체.
-            HttpResponseForbidden: 사용자가 인증되지 않은 경우 반환되는 응답 객체.
+            HttpResponseRedirect: 사용자가 북마크 동작 후 이전 페이지로 리디렉션되는 응답 객체
+            HttpResponseForbidden: 사용자가 인증되지 않은 경우 반환되는 응답 객체
         """
         if not request.user.is_authenticated:
             return PermissionDenied
@@ -408,12 +399,12 @@ class ToggleFollowView(View):
 
 class ToggleLikeView(LoginRequiredMixin, View):
     """
-    사용자가 게시물에 좋아요를 누르거나 취소할 수 있는 뷰.
+    사용자가 게시물에 좋아요를 누르거나 취소할 수 있는 뷰
     """
 
     def post(self, request, *args, **kwargs):
         """
-        POST 요청을 처리하여 사용자가 게시물에 좋아요를 누르거나 취소하는 동작을 처리합니다.
+        POST 요청을 처리하여 사용자가 게시물에 좋아요를 누르거나 취소하는 동작을 처리
         """
         post = get_object_or_404(Post, id=kwargs.get("post_id"))
 
@@ -433,7 +424,7 @@ class ToggleLikeView(LoginRequiredMixin, View):
 
 class BookmarkedPostsView(LoginRequiredMixin, ListView):
     """
-    사용자가 북마크한 게시물 목록을 표시하는 뷰.
+    사용자가 북마크한 게시물 목록을 표시하는 뷰
     """
 
     model = Bookmark

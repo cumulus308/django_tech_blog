@@ -12,7 +12,9 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="breadcrumb-main">
-                    <h4 class="text-capitalize breadcrumb-title">"{{ posts.0.writer.username }}" 유저 검색 결과</h4>
+                    <h4 class="text-capitalize breadcrumb-title">
+                        {% if posts.0.writer.username %}"{{ posts.0.writer.username }}" 유저 검색 결과 {% else %} 해당 유저가 작성한 글은 없네요.. {% endif %}
+                        </h4>
                     <div class="breadcrumb-action justify-content-center flex-wrap">
                         <nav aria-label="breadcrumb">
 

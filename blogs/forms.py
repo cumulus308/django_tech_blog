@@ -7,7 +7,7 @@ from .models import Post, Comment
 
 
 def load_banned_words():
-    file_path = Path(settings.BASE_DIR) / "banned_words.txt"
+    file_path = Path(settings.BASE_DIR) / "tools" / "banned_words.txt"
 
     with open(file_path, "r", encoding="utf-8") as file:
         banned_words = [line.strip() for line in file.readlines()]
