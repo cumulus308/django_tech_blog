@@ -4,8 +4,10 @@
 asgiref==3.8.1
 asttokens==2.4.1
 bleach==6.1.0
+brotli==1.1.0
 cfgv==3.4.0
-colorama==0.4.6; sys_platform == "win32"
+click==8.1.7
+colorama==0.4.6; sys_platform == "win32" or platform_system == "Windows"
 decorator==5.1.1
 distlib==0.3.8
 dj-database-url==2.2.0
@@ -15,6 +17,7 @@ django-widget-tweaks==1.5.0
 executing==2.0.1
 filelock==3.15.4
 gunicorn==23.0.0
+h11==0.14.0
 identify==2.6.0
 ipython==8.26.0
 jedi==0.19.1
@@ -39,6 +42,9 @@ stack-data==0.6.3
 traitlets==5.14.3
 typing-extensions==4.12.2
 tzdata==2024.1; sys_platform == "win32"
+uvicorn==0.30.6
 virtualenv==20.26.3
 wcwidth==0.2.13
 webencodings==0.5.1
+whitenoise==6.7.0
+whitenoise[brotli]==6.7.0
