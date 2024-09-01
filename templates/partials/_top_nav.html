@@ -6,13 +6,13 @@
             <a class="navbar-brand" href={% url "blogs:post_list" %}>
                 <img
                     class="dark"
-                    src="{% static 'img/logo_dark.svg' %}"
-                    alt="svg"
+                    src="{% static 'logo_dark.png' %}"
+                    alt="png"
                 />
                 <img
                     class="light"
-                    src="{% static 'img/logo_white.svg' %}"
-                    alt="img"
+                    src="{% static 'logo_dark.png' %}"
+                    alt="png"
                 />
             </a>
             <a href="#" class="sidebar-toggle">
@@ -1662,6 +1662,14 @@
     <div class="navbar-right">
         <ul class="navbar-right__menu">
             <li class="nav-search">
+                {% if user.is_authenticated %}
+                    {{ user.username }}님 안녕하세요.
+                {% else %}
+                    로그인을 하면 게시글을 볼 수 있어요.
+                {% endif %}
+            </li>
+
+            <li class="nav-search">
                 <a href="#" class="search-toggle">
                     <i class="uil uil-search"></i>
                     <i class="uil uil-times"></i>
@@ -1677,9 +1685,6 @@
                     />
                 </form>
             </li>
-
-
-
 
             <li class="nav-author">
                 {% if user.is_authenticated %}

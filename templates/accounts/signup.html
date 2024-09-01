@@ -20,13 +20,13 @@
                     <div class="col-xxl-3 col-xl-4 col-md-6 col-sm-8">
                         <div class="edit-profile">
                             <div class="edit-profile__logos">
-                                <img class="dark" src="{% static 'img/logo_dark.png' %}" alt="">
-                                <img class="light" src="{% static 'img/logo_white.png' %}" alt="">
+                                <img class="dark" src="{% static 'logo_dark.png' %}" alt="">
+                                <img class="light" src="{% static 'logo_dark.png' %}" alt="">
                             </div>
                             <div class="card border-0">
                                 <div class="card-header">
                                     <div class="edit-profile__title">
-                                        <h6>Sign in HexaDash</h6>
+                                        <h6>Sign in ModuBlog</h6>
                                     </div>
                                 </div>
                                 <div class="card-body">
@@ -94,7 +94,7 @@
                                     <p class="mb-0">
                                         have an account?
                                         <a href="{% url 'accounts:login' %}" class="color-primary">
-                                            Sign In
+                                            Log In
                                         </a>
                                     </p>
                                 </div>
@@ -124,6 +124,17 @@
           </li>
         </ul>
       </div>
+{% if errors %}
+    <script>
+    var errorMessages = "";
+    {% for field, error_list in errors.items %}
+        {% for error in error_list %}
+            errorMessages += "{{ error }}\n";
+        {% endfor %}
+    {% endfor %}
+    alert(errorMessages);
+    </script>
+{% endif %}
       {% include 'partials/_scripts.html' %}
 </body>
 </html>

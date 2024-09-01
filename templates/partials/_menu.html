@@ -7,20 +7,20 @@
         <li>
             <a href="{% url 'blogs:post_list' %}">
                 <span class="nav-icon uil uil-images"></span>
-                <span class="menu-text">{% translate "blog-menu-title" %}</span>
+                <span class="menu-text">{% translate "Post" %}</span>
             </a>
         </li>
 
         <li>
             <a href="{% url 'search:search_result' %}" class="{% if path_name == 'search_result' %}active{% endif %}">
                 <span class="nav-icon uil uil-credit-card-search"></span>
-                <span class="menu-text">{% translate "search-menu-title" %}</span>
+                <span class="menu-text">{% translate "Search" %}</span>
             </a>
         </li>
         <li>
             <a href="{% url 'blogs:bookmarked_posts' %}" class="{% if path_name == 'bookmark' %}active{% endif %}">
                 <span class="nav-icon uil uil-bookmark"></span>
-                <span class="menu-text">{% translate "bookmark-menu-title" %}</span>
+                <span class="menu-text">{% translate "Bookmark" %}</span>
             </a>
         </li>
     </ul>

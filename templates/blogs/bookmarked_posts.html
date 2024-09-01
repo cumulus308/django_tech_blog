@@ -32,7 +32,11 @@
                                         <div class="card bookmark bookmark--grid">
                                             <div class="bookmark__image">
                                                 <a href="{% url 'blogs:post_detail' bookmark.post.id %}">
-                                                    <img class="card-img-top img-fluid" src="{% static 'img/bookmark.png' %}" alt="{{ bookmark.post.title }}">
+                                                    {% if bookmark.post.thumbnail %}
+                                                    <img class="card-img-top img-fluid" src="{{ bookmark.post.thumbnail.url }}" alt="{{ bookmark.post.title }}">
+                                                    {% else %}
+                                                    <img class="card-img-top img-fluid" src="{% static 'img/bookmark.png' %}" alt="digital-chair">
+                                                    {% endif %}
                                                 </a>
                                             </div>
                                             <div class="card-body px-15 py-20">

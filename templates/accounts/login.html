@@ -35,25 +35,17 @@
                                             {% csrf_token %}
                                             <div class="form-group mb-25">
                                                 <label for="username">Username</label>
-                                                <input type="text" class="form-control" id="username" name="username" placeholder="Username" value="admin" required>
+                                                <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
                                             </div>
                                             <div class="form-group mb-15">
                                                 <label for="password-field">Password</label>
                                                 <div class="position-relative">
-                                                    <input id="password-field" type="password" class="form-control" name="password" placeholder="Password" value="admin123">
+                                                    <input id="password-field" type="password" class="form-control" name="password" placeholder="Password">
                                                     <div toggle="#password-field" class="uil uil-eye-slash text-lighten fs-15 field-icon toggle-password2">
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="admin-condition">
-                                                <div class="checkbox-theme-default custom-checkbox ">
-                                                    <input class="checkbox" type="checkbox" id="check-1" checked>
-                                                    <label for="check-1">
-                                                        <span class="checkbox-text">Keep me logged in</span>
-                                                    </label>
-                                                </div>
-                                                <a href="#">forget password?</a>
-                                            </div>
+
                                             <div class="admin__button-group button-group d-flex pt-1 justify-content-md-start justify-content-center">
                                                 <button type="submit" class="btn btn-primary btn-default w-100 btn-squared text-capitalize lh-normal px-50 signIn-createBtn ">
                                                     sign in

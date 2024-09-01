@@ -2,7 +2,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.views import View
@@ -33,11 +33,14 @@ class SignUpView(CreateView):
 
     def form_valid(self, form):
         user = form.save()
+        username = self.request.POST["username"]
+        print(username)
+        password = self.request.POST["password1"]
+        print(password)
+        user = authenticate(username=username, password=password)
         login(self.request, user)
-        return super().form_valid(form)
 
-    def form_invalid(self, form):
-        return self.render_to_response(self.get_context_data(form=form))
+        return super().form_valid(form)
 
 
 class CustomLoginView(LoginView):

@@ -199,6 +199,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = "blogs/post_form.html"
+    redirect_field_name = "next"
 
     def test_func(self):
         """
@@ -244,6 +245,7 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     """
 
     model = Post
+    redirect_field_name = "next"
     success_url = reverse_lazy("blogs:post_list")
 
     def test_func(self):
@@ -269,6 +271,8 @@ class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, View):
     """
     사용자가 자신의 댓글을 수정할 수 있는 뷰
     """
+
+    redirect_field_name = "next"
 
     def test_func(self):
         try:
@@ -315,6 +319,7 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     """
 
     model = Comment
+    redirect_field_name = "next"
 
     def test_func(self):
         return self.request.user == self.get_object().writer
@@ -402,6 +407,8 @@ class ToggleLikeView(LoginRequiredMixin, View):
     사용자가 게시물에 좋아요를 누르거나 취소할 수 있는 뷰
     """
 
+    redirect_field_name = "next"
+
     def post(self, request, *args, **kwargs):
         """
         POST 요청을 처리하여 사용자가 게시물에 좋아요를 누르거나 취소하는 동작을 처리
@@ -430,6 +437,7 @@ class BookmarkedPostsView(LoginRequiredMixin, ListView):
     model = Bookmark
     template_name = "blogs/bookmarked_posts.html"
     context_object_name = "bookmarks"
+    redirect_field_name = "next"
 
     def get_queryset(self):
         return Bookmark.objects.filter(user=self.request.user).select_related(

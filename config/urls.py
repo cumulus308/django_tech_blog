@@ -9,17 +9,12 @@ from django.shortcuts import render
 from accounts.views import index
 
 
-def test_404_viw(request):
-    return HttpResponseNotFound(render(request, "404.html"))
-
-
 urlpatterns = [
     path("admin/", admin.site.urls, name="index"),
     path("accounts/", include("accounts.urls")),
     path("blogs/", include("blogs.urls")),
     path("search/", include("search.urls")),
     path("", index, name="index"),
-    path("test-404/", test_404_viw, name="error404"),
 ]
 
 if settings.DEBUG:
