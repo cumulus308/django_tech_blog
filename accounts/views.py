@@ -32,14 +32,6 @@ class SignUpView(CreateView):
     success_url = reverse_lazy("blogs:post_list")
 
     def form_valid(self, form):
-        user = form.save()
-        username = self.request.POST["username"]
-        print(username)
-        password = self.request.POST["password1"]
-        print(password)
-        user = authenticate(username=username, password=password)
-        login(self.request, user)
-
         return super().form_valid(form)
 
 

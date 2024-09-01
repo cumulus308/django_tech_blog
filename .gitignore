@@ -341,16 +341,7 @@ cython_debug/
 .templates
 
 
-static/css/plugin.min.rtl.css
-static/img/svg/world.svg
-static/css/plugin.min.css
-static/css/plugins/bootstrap/maps/bootstrap.css.map
-static/fonts/la-solid-900.svg
-static/js/plugins.min.js
-static/css/style.css
-static/css/style.rtl.css
-static/fonts/la-brands-400.svg
-static/js/plugins/fullcalendar@5.2.0.js
+
 
 
 .vscode
