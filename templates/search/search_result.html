@@ -126,7 +126,7 @@
                                     <div class="mb-30">
                                         <a href="{% url "search:category_detail_result" item.category.pk %}">
                                             <h6 class="fw-500">
-                                                {% if highlighted_category %}
+                                                {% if item.highlighted_category %}
                                                     {{ item.highlighted_category.start }}<span class="color-primary">{{ item.highlighted_category.match }}</span>{{ item.highlighted_category.end }}
                                                 {% else %}
                                                     {{ item.category }}

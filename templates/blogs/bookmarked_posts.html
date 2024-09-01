@@ -33,9 +33,9 @@
                                             <div class="bookmark__image">
                                                 <a href="{% url 'blogs:post_detail' bookmark.post.id %}">
                                                     {% if bookmark.post.thumbnail %}
-                                                    <img class="card-img-top img-fluid" src="{{ bookmark.post.thumbnail.url }}" alt="{{ bookmark.post.title }}">
+                                                        <img class="card-img-top img-fluid" src="{{ bookmark.post.thumbnail.url }}" alt="{{ bookmark.post.title }}">
                                                     {% else %}
-                                                    <img class="card-img-top img-fluid" src="{% static 'img/bookmark.png' %}" alt="digital-chair">
+                                                        <img class="card-img-top img-fluid" src="{% static 'img/bookmark.png' %}" alt="digital-chair">
                                                     {% endif %}
                                                 </a>
                                             </div>
