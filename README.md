@@ -7,23 +7,16 @@
     - [1.1 프로젝트 소개](#11-프로젝트-소개)
     - [1.2 주요 기능](#12-주요-기능)
     - [1.3 기술 스택](#13-기술-스택)
-
 - [2. 개발 환경](#2-개발-환경)
     - [2.1 사용된 버전](#21-사용된-버전)
-
 - [3. 프로젝트 구조와 WBS](#3-프로젝트-구조와-wbs)
     - [3.1 폴더 트리](#31-폴더-트리)
     - [3.2 WBS](#32-wbs)
     - [3.3 ERD](#33-erd)
-
 - [4. 요구 명세](#4-요구-명세)
-
 - [5. 사용 화면 및 주요 기능](#5-사용-화면-및-주요-기능)
     - [5.1 사용 화면](#51-사용-화면)
-
 - [6. URL 구조 및 기능 명세 (Monolithic)](#6-url-구조-및-기능-명세-monolithic)
-
-- []
 - [7. 트러블 슈팅 및 해결 방법](#7-트러블-슈팅-및-해결-방법)
 - [8. 배운점](#8-배운점)
 
@@ -318,7 +311,7 @@ erDiagram
         - 본인의 게시글만 삭제 가능.
         - 게시글을 삭제하는 기능 구현.
         - 삭제 후 게시글 목록 화면으로 이동.
-        - 삭제된 게시글 접근 시 404 페이지 표시 기능 추가 예정.
+        - 삭제된 게시글 접근 시 404 페이지 표시 기능.
 - 회원 관련 추가 기능 (UI 구현 필요)
     - 비밀번호 변경 기능
     - 프로필 수정 기능
@@ -433,19 +426,19 @@ erDiagram
             - 폼이 유효하지 않은 경우, 오류 메시지를 추가하고 다시 폼을 렌더링합니다.
 
 ## 6.3 blogs
-| URL 패턴                              | 연결된 뷰                              | 연결된 Template                    | 설명                                |
-|---------------------------------------|-----------------------------------------|-------------------------------------|-------------------------------------|
-| `/`                                   | `PostListView.as_view()`                | `blogs/post_list.html`              | 게시글 목록 페이지                  |
-| `write/`                              | `PostCreateView.as_view()`              | `blogs/post_form.html`              | 게시글 작성 페이지                  |
-| `<int:pk>/`                           | `PostDetailView.as_view()`              | `blogs/post_detail.html`            | 게시글 상세보기 페이지              |
-| `edit/<int:pk>/`                      | `PostUpdateView.as_view()`              | `blogs/post_form.html`              | 게시글 수정 페이지                  |
-| `delete/<int:pk>/`                    | `PostDeleteView.as_view()`              |                                     | 게시글 삭제 기능                    |
-| `bookmarks/`                          | `BookmarkedPostsView.as_view()`         | `blogs/bookmarked_posts.html`       | 북마크한 게시글 목록 페이지         |
-| `comment/<int:pk>/update/`            | `CommentUpdateView.as_view()`           |                                     | 댓글 수정 페이지                    |
-| `comment/<int:pk>/delete/`            | `CommentDeleteView.as_view()`           |                                     | 댓글 삭제 기능                      |
-| `post/<int:post_id>/toggle-bookmark/` | `ToggleBookmarkView.as_view()`          |                                     | 게시글 북마크 토글 기능             |
-| `post/<int:post_id>/toggle-like/`     | `ToggleLikeView.as_view()`              |                                     | 게시글 좋아요 토글 기능             |
-| `user/<int:user_id>/toggle-follow/`   | `ToggleFollowView.as_view()`            |                                     | 사용자 팔로우 토글 기능             |
+| URL 패턴                              | 연결된 뷰                       | 연결된 Template             | 설명                        |
+|---------------------------------------|---------------------------------|------------------------------|-----------------------------|
+| `/`                                   | `PostListView.as_view()`        | `blogs/post_list.html`       | 게시글 목록 페이지          |
+| `write/`                              | `PostCreateView.as_view()`      | `blogs/post_form.html`       | 게시글 작성 페이지          |
+| `<int:pk>/`                           | `PostDetailView.as_view()`      | `blogs/post_detail.html`     | 게시글 상세보기 페이지      |
+| `edit/<int:pk>/`                      | `PostUpdateView.as_view()`      | `blogs/post_form.html`       | 게시글 수정 페이지          |
+| `delete/<int:pk>/`                    | `PostDeleteView.as_view()`      |                              | 게시글 삭제 기능            |
+| `bookmarks/`                          | `BookmarkedPostsView.as_view()` | `blogs/bookmarked_posts.html`| 북마크한 게시글 목록 페이지 |
+| `comment/<int:pk>/update/`            | `CommentUpdateView.as_view()`   |                              | 댓글 수정 페이지            |
+| `comment/<int:pk>/delete/`            | `CommentDeleteView.as_view()`   |                              | 댓글 삭제 기능              |
+| `post/<int:post_id>/toggle-bookmark/` | `ToggleBookmarkView.as_view()`  |                              | 게시글 북마크 토글 기능     |
+| `post/<int:post_id>/toggle-like/`     | `ToggleLikeView.as_view()`      |                              | 게시글 좋아요 토글 기능     |
+| `user/<int:user_id>/toggle-follow/`   | `ToggleFollowView.as_view()`    |                              | 사용자 팔로우 토글 기능     |
 
 - blogs 기능 명세
     - **게시글 목록 뷰 (PostListView)**
@@ -511,14 +504,14 @@ erDiagram
 
 
 ## 6.4 search
-| URL 패턴                               | 연결된 뷰                                  | 연결된 Template                          | 설명                              |
-|----------------------------------------|---------------------------------------------|-------------------------------------------|-----------------------------------|
-| `/`                                    | `combined_view`                             | `search/search_result.html`               | 통합 검색 결과 페이지              |
-| `titlecontent/`                        | `TitleContentSearchListView.as_view()`      | `search/search_title_content_result.html` | 제목 및 내용 검색 결과 페이지      |
-| `writer/`                              | `WriterSearchListView.as_view()`            | `search/search_writer_result.html`        | 작성자 검색 결과 페이지            |
-| `writer/<int:writer_pk>/`              | `WriterSearchDetailListView.as_view()`      | `search/search_writer_detail_result.html` | 특정 작성자의 상세 검색 결과 페이지 |
-| `category/`                            | `CategorySearchListView.as_view()`          | `search/search_category_result.html`      | 카테고리 검색 결과 페이지          |
-| `category/<int:category_pk>/`          | `CategorySearchDetailListView.as_view()`    | `search/search_category_detail_result.html` | 특정 카테고리의 상세 검색 결과 페이지 |
+| URL 패턴                     | 연결된 뷰                                | 연결된 Template                          | 설명                              |
+|------------------------------|------------------------------------------|-------------------------------------------|-----------------------------------|
+| `/`                          | `combined_view`                          | `search/search_result.html`               | 통합 검색 결과 페이지              |
+| `titlecontent/`              | `TitleContentSearchListView.as_view()`   | `search/search_title_content_result.html` | 제목 및 내용 검색 결과 페이지      |
+| `writer/`                    | `WriterSearchListView.as_view()`         | `search/search_writer_result.html`        | 작성자 검색 결과 페이지            |
+| `writer/<int:writer_pk>/`    | `WriterSearchDetailListView.as_view()`   | `search/search_writer_detail_result.html` | 특정 작성자의 상세 검색 결과 페이지 |
+| `category/`                  | `CategorySearchListView.as_view()`       | `search/search_category_result.html`      | 카테고리 검색 결과 페이지          |
+| `category/<int:category_pk>/`| `CategorySearchDetailListView.as_view()` | `search/search_category_detail_result.html` | 특정 카테고리의 상세 검색 결과 페이지 |
 
 - search 기능 명세
     - **통합 검색 결과 뷰 (combined_view)**
