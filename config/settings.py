@@ -1,13 +1,17 @@
+import os
 from pathlib import Path
+import environ
 
+env = environ.Env(DEBUG=(bool, False))
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+env.read_env(os.path.join(BASE_DIR, ".env"))
 
 
-SECRET_KEY = "django-insecure-r%*gg(ap^2v^c=xzwh7x(lwcu81(&9zc6*aj350vx+w=&b%@-_"
+SECRET_KEY = env("SECRET_KEY")
 
+DEBUG = env("DEBUG")
 
-DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -28,7 +32,7 @@ PROJECTS_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    "debug_toolbar",
+    # "debug_toolbar",
     "widget_tweaks",
 ]
 
@@ -42,7 +46,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
+    # "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -72,8 +76,12 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "postgres",
+        "USER": "root",
+        "PASSWORD": "qwer1234!!",
+        "HOST": "ls-37c938ba02fe23f1dcda27f48c72c7fae1d35291.cpqcuuweo7a4.ap-northeast-2.rds.amazonaws.com",
+        "PORT": "5432",
     }
 }
 
@@ -105,7 +113,7 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
-# STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -116,10 +124,6 @@ LOGOUT_REDIRECT_URL = "/"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
-
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
 
 
 AUTH_USER_MODEL = "accounts.CustomUser"
